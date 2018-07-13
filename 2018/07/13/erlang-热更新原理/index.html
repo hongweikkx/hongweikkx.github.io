@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="https://hongweikkx.github.io">
   <title>erlang 热更新原理 | kkx&#39;s blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="软件升级：加载调用一个 未加载的文件或者显示的code:load_file/1 函数调用的时候都会 触发erlang代码服务器动态加载代码 热更新当内存中的程序需要更新的时候， erlang VM 会维持两个版本， 一个是老版本 old , 一个是新版本 new.  热更新时，驻留在旧代码中的执行会继续执行旧的代码而其他情况下执行新的代码。具体是：当函数调用为非限定调用的时候就使用旧代码， 而在使">
+  <meta name="description" content="加载调用一个 未加载的文件或者显示的code:load_file/1 函数调用的时候都会 触发erlang代码服务器动态加载代码 热更新当内存中的程序需要更新的时候， erlang VM 会维持两个版本， 一个是老版本 old , 一个是新版本 new.  热更新时，驻留在旧代码中的执行会继续执行旧的代码而其他情况下执行新的代码。具体是：当函数调用为非限定调用的时候就使用旧代码， 而在使用M:F(">
 <meta name="keywords" content="erlang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="erlang 热更新原理">
 <meta property="og:url" content="https://hongweikkx.github.io/2018/07/13/erlang-热更新原理/index.html">
 <meta property="og:site_name" content="kkx&#39;s blogs">
-<meta property="og:description" content="软件升级：加载调用一个 未加载的文件或者显示的code:load_file/1 函数调用的时候都会 触发erlang代码服务器动态加载代码 热更新当内存中的程序需要更新的时候， erlang VM 会维持两个版本， 一个是老版本 old , 一个是新版本 new.  热更新时，驻留在旧代码中的执行会继续执行旧的代码而其他情况下执行新的代码。具体是：当函数调用为非限定调用的时候就使用旧代码， 而在使">
+<meta property="og:description" content="加载调用一个 未加载的文件或者显示的code:load_file/1 函数调用的时候都会 触发erlang代码服务器动态加载代码 热更新当内存中的程序需要更新的时候， erlang VM 会维持两个版本， 一个是老版本 old , 一个是新版本 new.  热更新时，驻留在旧代码中的执行会继续执行旧的代码而其他情况下执行新的代码。具体是：当函数调用为非限定调用的时候就使用旧代码， 而在使用M:F(">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-13T15:17:56.205Z">
+<meta property="og:updated_time" content="2018-07-13T15:51:43.385Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="erlang 热更新原理">
-<meta name="twitter:description" content="软件升级：加载调用一个 未加载的文件或者显示的code:load_file/1 函数调用的时候都会 触发erlang代码服务器动态加载代码 热更新当内存中的程序需要更新的时候， erlang VM 会维持两个版本， 一个是老版本 old , 一个是新版本 new.  热更新时，驻留在旧代码中的执行会继续执行旧的代码而其他情况下执行新的代码。具体是：当函数调用为非限定调用的时候就使用旧代码， 而在使">
+<meta name="twitter:description" content="加载调用一个 未加载的文件或者显示的code:load_file/1 函数调用的时候都会 触发erlang代码服务器动态加载代码 热更新当内存中的程序需要更新的时候， erlang VM 会维持两个版本， 一个是老版本 old , 一个是新版本 new.  热更新时，驻留在旧代码中的执行会继续执行旧的代码而其他情况下执行新的代码。具体是：当函数调用为非限定调用的时候就使用旧代码， 而在使用M:F(">
   
     <link rel="alternative" href="/atom.xml" title="kkx&#39;s blogs" type="application/atom+xml">
   
@@ -157,7 +157,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="软件升级："><a href="#软件升级：" class="headerlink" title="软件升级："></a>软件升级：</h1><h2 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h2><p>调用一个 未加载的文件或者显示的code:load_file/1 函数调用的时候都会 触发erlang代码服务器动态加载代码</p>
+        <h2 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h2><p>调用一个 未加载的文件或者显示的code:load_file/1 函数调用的时候都会 触发erlang代码服务器动态加载代码</p>
 <h2 id="热更新"><a href="#热更新" class="headerlink" title="热更新"></a>热更新</h2><p>当内存中的程序需要更新的时候， erlang VM 会维持两个版本， 一个是老版本 old , 一个是新版本 new.  热更新时，驻留在旧代码中的执行会继续执行旧的代码而其他情况下执行新的代码。<br>具体是：当函数调用为非限定调用的时候就使用旧代码， 而在使用M:F(A) 完全限定调用的时候， 就使用新的代码。<br>这个时候就会出现几个问题， </p>
 <ol>
 <li>如果一直调用local 代码是不是就一直不更新了？ </li>

@@ -157,7 +157,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="软件升级："><a href="#软件升级：" class="headerlink" title="软件升级："></a>软件升级：</h1><h2 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h2><p>调用一个 未加载的文件或者显示的code:load_file/1 函数调用的时候都会 触发erlang代码服务器动态加载代码</p>
+        <h2 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h2><p>调用一个 未加载的文件或者显示的code:load_file/1 函数调用的时候都会 触发erlang代码服务器动态加载代码</p>
 <h2 id="热更新"><a href="#热更新" class="headerlink" title="热更新"></a>热更新</h2><p>当内存中的程序需要更新的时候， erlang VM 会维持两个版本， 一个是老版本 old , 一个是新版本 new.  热更新时，驻留在旧代码中的执行会继续执行旧的代码而其他情况下执行新的代码。<br>具体是：当函数调用为非限定调用的时候就使用旧代码， 而在使用M:F(A) 完全限定调用的时候， 就使用新的代码。<br>这个时候就会出现几个问题， </p>
 <ol>
 <li>如果一直调用local 代码是不是就一直不更新了？ </li>
