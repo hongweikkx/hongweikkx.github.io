@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="https://hongweikkx.github.io">
   <title>erl&lt;=&gt;abstract_code | kkx&#39;s blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="erl =&amp;gt; abstract_code12erlc +debug_info test.erl&amp;#123;ok, &amp;#123;_, [&amp;#123;abstract_code, &amp;#123;_, Abs&amp;#125;&amp;#125;]&amp;#125;&amp;#125; = beam_lib:chunks(test, [abstract_code]). abstract_code =&amp;gt; erl12S =">
+  <meta name="description" content="erl =&amp;gt; abstract_code12erlc +debug_info test.erl&amp;#123;ok, &amp;#123;_, [&amp;#123;abstract_code, &amp;#123;_, Abs&amp;#125;&amp;#125;]&amp;#125;&amp;#125; = beam_lib:chunks(test, [abstract_code]).">
 <meta name="keywords" content="erlang">
 <meta property="og:type" content="article">
 <meta property="og:title" content="erl&lt;=&gt;abstract_code">
 <meta property="og:url" content="https://hongweikkx.github.io/2018/07/14/erl-abstract-code/index.html">
 <meta property="og:site_name" content="kkx&#39;s blogs">
-<meta property="og:description" content="erl =&amp;gt; abstract_code12erlc +debug_info test.erl&amp;#123;ok, &amp;#123;_, [&amp;#123;abstract_code, &amp;#123;_, Abs&amp;#125;&amp;#125;]&amp;#125;&amp;#125; = beam_lib:chunks(test, [abstract_code]). abstract_code =&amp;gt; erl12S =">
+<meta property="og:description" content="erl =&amp;gt; abstract_code12erlc +debug_info test.erl&amp;#123;ok, &amp;#123;_, [&amp;#123;abstract_code, &amp;#123;_, Abs&amp;#125;&amp;#125;]&amp;#125;&amp;#125; = beam_lib:chunks(test, [abstract_code]).">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-15T08:00:53.047Z">
+<meta property="og:updated_time" content="2018-07-17T16:23:39.593Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="erl&lt;=&gt;abstract_code">
-<meta name="twitter:description" content="erl =&amp;gt; abstract_code12erlc +debug_info test.erl&amp;#123;ok, &amp;#123;_, [&amp;#123;abstract_code, &amp;#123;_, Abs&amp;#125;&amp;#125;]&amp;#125;&amp;#125; = beam_lib:chunks(test, [abstract_code]). abstract_code =&amp;gt; erl12S =">
+<meta name="twitter:description" content="erl =&amp;gt; abstract_code12erlc +debug_info test.erl&amp;#123;ok, &amp;#123;_, [&amp;#123;abstract_code, &amp;#123;_, Abs&amp;#125;&amp;#125;]&amp;#125;&amp;#125; = beam_lib:chunks(test, [abstract_code]).">
   
     <link rel="alternative" href="/atom.xml" title="kkx&#39;s blogs" type="application/atom+xml">
   
@@ -59,6 +59,8 @@
 			<ul>
 			
 				<li><a href="/">主页</a></li>
+	        
+				<li><a href="/archives/index.html">归档</a></li>
 	        
 			</ul>
 		</nav>
@@ -108,6 +110,8 @@
 			
 				
 			
+				
+			
 			
 			
 			<nav class="header-nav">
@@ -126,7 +130,9 @@
 				<ul style="width: 50%">
 				
 				
-					<li style="width: 100%"><a href="/">主页</a></li>
+					<li style="width: 50%"><a href="/">主页</a></li>
+		        
+					<li style="width: 50%"><a href="/archives/index.html">归档</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,9 +173,12 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h5 id="erl-gt-abstract-code"><a href="#erl-gt-abstract-code" class="headerlink" title="erl =&gt; abstract_code"></a>erl =&gt; abstract_code</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">erlc +debug_info test.erl</span><br><span class="line">&#123;ok, &#123;_, [&#123;abstract_code, &#123;_, Abs&#125;&#125;]&#125;&#125; = beam_lib:chunks(test, [abstract_code]).</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
 <h5 id="abstract-code-gt-erl"><a href="#abstract-code-gt-erl" class="headerlink" title="abstract_code =&gt; erl"></a>abstract_code =&gt; erl</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">S = erl_prettypr:format(erl_syntax:form_list(Abs)).</span><br><span class="line">file:write_file(&quot;test_code&quot;, term_to_binary(S)).</span><br></pre></td></tr></table></figure>
 <h5 id="ep"><a href="#ep" class="headerlink" title="ep:"></a>ep:</h5><h5 id="erl-gt-abstract-code-1"><a href="#erl-gt-abstract-code-1" class="headerlink" title="erl =&gt; abstract_code"></a>erl =&gt; abstract_code</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">$ cat test.erl</span><br><span class="line">-module(test).</span><br><span class="line">-export([start/0]).</span><br><span class="line">-ifdef(TEST).</span><br><span class="line">hello() -&gt;</span><br><span class="line">   io:format(&quot;########1~n&quot;).</span><br><span class="line">-else.</span><br><span class="line">hello() -&gt;</span><br><span class="line">   io:format(&quot;########2&quot;).</span><br><span class="line">-endif.</span><br><span class="line">start() -&gt;</span><br><span class="line">   hello().</span><br><span class="line">$</span><br><span class="line">$ erlc +debug_info test.erl</span><br><span class="line">$ erl</span><br><span class="line">1&gt; &#123;ok, &#123;_, [&#123;abstract_code, &#123;_, Abs&#125;&#125;]&#125;&#125;=beam_lib:chunks(test, [abstract_code                                 ]).</span><br><span class="line">&#123;ok,&#123;test,</span><br><span class="line">        [&#123;abstract_code,</span><br><span class="line">             &#123;raw_abstract_v1,</span><br><span class="line">                 [&#123;attribute,1,file,&#123;&quot;c:/Users/4399/Desktop/test.erl&quot;,1&#125;&#125;,</span><br><span class="line">                  &#123;attribute,1,module,test&#125;,</span><br><span class="line">                  &#123;attribute,2,export,[&#123;start,0&#125;]&#125;,</span><br><span class="line">                  &#123;function,7,hello,0,</span><br><span class="line">                      [&#123;clause,7,[],[],[&#123;call,8,&#123;remote,...&#125;,[...]&#125;]&#125;]&#125;,</span><br><span class="line">                  &#123;function,11,start,0,</span><br><span class="line">                      [&#123;clause,11,[],[],[&#123;call,12,&#123;...&#125;,...&#125;]&#125;]&#125;,</span><br><span class="line">                  &#123;eof,15&#125;]&#125;&#125;]&#125;&#125;</span><br></pre></td></tr></table></figure>
 <h5 id="abstract-code-gt-erl-1"><a href="#abstract-code-gt-erl-1" class="headerlink" title="abstract_code =&gt; erl"></a>abstract_code =&gt; erl</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">2&gt; S = erl_prettypr:format(erl_syntax:form_list(Abs)).</span><br><span class="line">&quot;-file(\&quot;c:/Users/4399/Desktop/test.erl\&quot;, 1).\n\n-module(test).\n\n-export([sta                                 rt/0]).\n\nhello() -&gt; io:format(\&quot;########2\&quot;).\n\nstart() -&gt; hello().\n\n&quot;</span><br><span class="line">3&gt; file:write_file(&quot;test_code&quot;, term_to_binary(S)).</span><br><span class="line">ok</span><br><span class="line">$ cat test_code</span><br><span class="line">僰▒-file(&quot;c:/Users/4399/Desktop/test.erl&quot;, 1).</span><br><span class="line"></span><br><span class="line">-module(test).</span><br><span class="line"></span><br><span class="line">-export([start/0]).</span><br><span class="line"></span><br><span class="line">hello() -&gt; io:format(&quot;########2&quot;).</span><br><span class="line"></span><br><span class="line">start() -&gt; hello().</span><br></pre></td></tr></table></figure>
+<hr>
+<p><em>best wishes</em></p>
 
       
 
