@@ -6,20 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://hongweikkx.github.io">
-  <title>Heap-Architectures-for-Concurrent-Languages-using-Message-Passing | kkx&#39;s blogs</title>
+  <title>kkx&#39;s blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="设计并发语言的一个难点就在于运行时系统中存储结构的实现，这里将讨论 依赖自动内存回收和通过异步消息传递实现并发的语言的运行时系统实现">
-<meta name="keywords" content="architectures,erlang">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Heap-Architectures-for-Concurrent-Languages-using-Message-Passing">
-<meta property="og:url" content="https://hongweikkx.github.io/2018/07/21/Heap-Architectures-for-Concurrent-Languages-using-Message-Passing/index.html">
+  <meta name="description" content="var domain=&apos;https://qzonestyle.gtimg.cn/qzone_v6/lostchild/&apos;;">
+<meta property="og:type" content="website">
+<meta property="og:title" content="kkx&#39;s blogs">
+<meta property="og:url" content="https://hongweikkx.github.io/404.html">
 <meta property="og:site_name" content="kkx&#39;s blogs">
-<meta property="og:description" content="设计并发语言的一个难点就在于运行时系统中存储结构的实现，这里将讨论 依赖自动内存回收和通过异步消息传递实现并发的语言的运行时系统实现">
+<meta property="og:description" content="var domain=&apos;https://qzonestyle.gtimg.cn/qzone_v6/lostchild/&apos;;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-07-20T18:32:33.689Z">
+<meta property="og:updated_time" content="2018-07-22T05:38:22.480Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Heap-Architectures-for-Concurrent-Languages-using-Message-Passing">
-<meta name="twitter:description" content="设计并发语言的一个难点就在于运行时系统中存储结构的实现，这里将讨论 依赖自动内存回收和通过异步消息传递实现并发的语言的运行时系统实现">
+<meta name="twitter:title" content="kkx&#39;s blogs">
+<meta name="twitter:description" content="var domain=&apos;https://qzonestyle.gtimg.cn/qzone_v6/lostchild/&apos;;">
   
     <link rel="alternative" href="/atom.xml" title="kkx&#39;s blogs" type="application/atom+xml">
   
@@ -157,62 +156,16 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Heap-Architectures-for-Concurrent-Languages-using-Message-Passing" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="page-" class="article article-type-page " itemscope itemprop="blogPost">
   <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 class="article-title" itemprop="name">
-      Heap-Architectures-for-Concurrent-Languages-using-Message-Passing
-    </h1>
-  
-
-        
-        <a href="/2018/07/21/Heap-Architectures-for-Concurrent-Languages-using-Message-Passing/" class="archive-article-date">
-  	<time datetime="2018-07-20T17:58:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-21</time>
-</a>
-        
-        
-           <span class="archive-article-date">
-              阅读量 <span id="busuanzi_value_page_pv"></span>
-              </span>
-        
-      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>设计并发语言的一个难点就在于运行时系统中存储结构的实现，<br>这里将讨论 依赖自动内存回收和通过异步消息传递实现并发的语言的运行时系统实现<br><a id="more"></a></p>
-<p>有三种可选择的内存堆结构。<br></p>
-<ol>
-<li>每个进程分配和管理自己的内存区域， 所有在进程间的消息都必须拷贝。<br></li>
-<li>有一个所有进程都共享的堆 <br></li>
-<li>一个混合的架构, 每个进程有自己的私有堆，同时有一个共享的堆用于类似于消息的数据发送.</li>
-</ol>
-<p>接下来将对于每种体系结构，讨论进程间消息传递和gc </p>
-<h3 id="1-以进程为中心的体系结构"><a href="#1-以进程为中心的体系结构" class="headerlink" title="1. 以进程为中心的体系结构"></a>1. 以进程为中心的体系结构</h3><h4 id="1-1-描述"><a href="#1-1-描述" class="headerlink" title="1.1 描述"></a>1.1 描述</h4><p>   堆和栈 放在一起。 好处是容易判断溢出，坏处是扩展或者重新分配堆或者栈涉及到了相同的区域。 <br><br>   erlang支持大型的binary，他们并没有存储在堆中，而是引用计数的存储在一个分离的全局内存区域. 因此此后，我们将忽略大型的对象。 </p>
-<h4 id="1-2-进程消息传递"><a href="#1-2-进程消息传递" class="headerlink" title="1.2 进程消息传递:"></a>1.2 进程消息传递:</h4><p>   本地数据发送到另一个进程 会被扁平化， 所以会占据更多的空间。<br>   erlang exp:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">1&gt; L = [1,2,3].</span><br><span class="line">[1,2,3]</span><br><span class="line"></span><br><span class="line">2&gt; L1 = [L, L, L].</span><br><span class="line">[[1,2,3],[1,2,3],[1,2,3]]</span><br><span class="line"></span><br><span class="line">3&gt; erts_debug:size(L1).</span><br><span class="line">12</span><br><span class="line">4&gt; erts_debug:flat_size(L1).</span><br><span class="line">24</span><br><span class="line">5&gt; Pid = spawn(fun() -&gt; receive E -&gt; io:format(&quot;~p~n&quot;, [erts_debug:size(E)]) end end).</span><br><span class="line">&lt;0.66.0&gt;</span><br><span class="line">6&gt; Pid ! L1.</span><br><span class="line">24</span><br><span class="line">[[1,2,3],[1,2,3],[1,2,3]]</span><br></pre></td></tr></table></figure>
-<h4 id="1-3-gc"><a href="#1-3-gc" class="headerlink" title="1.3 gc"></a>1.3 gc</h4><h5 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：<br></h5><p>   <strong>1. 内存回收无成本</strong> <br><br>   进程死去内存会直接释放掉， 不需要gc. <br><br>   <strong>2. 小的根集合</strong> <br><br>   每个程序都有自己的堆， 那么栈和邮箱的根集合就会很小， gc时间短。 <br><br>   <strong>3. 缓存局部性的提高</strong><br><br>      缓存局部性是指程序在执行某个程序的时候， 倾向于使用最近使用（时间局部性）或者附近的数据（空间局部性）.因为每个进程的数据都在一个连续的而且小的堆栈空间中， 所以内存的局部性也是很好的。<br><br>   <strong>4. 堆栈溢出更加容易检测</strong><br><br>   因为每个进程一个堆，堆和栈的溢出的测试可以放在一起，更少的去访问寄存器中的指针</p>
-<h5 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h5><p>   <strong>1. 消息传递花销大</strong> <br><br>     消息在传递是必须复制，而且扁平化处理。在一些实现中，消息可能需要遍历不止一次，一次用于计算大小， （用于接收堆溢出的检测，或者触发gc 或者 在必要的时候扩展）， 另一次用于复制。<br><br>   <strong>2. 更多的空间需要</strong> <br><br>    因为消息是复制的。 如果这个消息中包含很多相似的子term，那么在消息发送的时候将会非线性的增长。而且，子term如果在两个进程间来回传送的时候，哪怕term之前在这个进程已经存在了, 每一个发送也都会有一个新的copy。<br><br>   <strong>3. 高内存碎片</strong> <br><br>    因为进程不能利用其它进程的内存空间， 即便其他进程有没有使用的空间。 这也就是说一个进程默认只能使用一小部分的内存， 这也反过来增加了gc的次数。</p>
-<p>   这种架构会影响程序改怎么写。比如erlang要求小消息，大运算。</p>
-<h3 id="2-一个分享堆的体系结构"><a href="#2-一个分享堆的体系结构" class="headerlink" title="2.一个分享堆的体系结构"></a>2.一个分享堆的体系结构</h3><h4 id="2-1-描述"><a href="#2-1-描述" class="headerlink" title="2.1 描述"></a>2.1 描述</h4><p>   在这个体系结构中， 每个进程都有自己的栈，但是只有一个供所有进程共享的唯一的堆。这个堆 共享消息和所有复合的terms。</p>
-<h4 id="2-2-进程消息传递："><a href="#2-2-进程消息传递：" class="headerlink" title="2.2 进程消息传递："></a>2.2 进程消息传递：</h4><p>   消息传递只需要传递一个指针, 共享的堆也保持不变，消息也不需要拷贝和遍历。 在这个结构中， 消息传递是一个常量操作。</p>
-<h4 id="2-3-gc"><a href="#2-3-gc" class="headerlink" title="2.3 gc"></a>2.3 gc</h4><p>   从概念上来讲，共享堆的gc操作和私有堆应该是一样的，不同的是共享堆的根集（root set）包括了所有进程的栈和邮箱；这些进程会迫使gc. 这表明了，即使是在一个多线程的系统中， gc也会阻塞所有的进程。</p>
-<h5 id="优点：-1"><a href="#优点：-1" class="headerlink" title="优点："></a>优点：</h5><p>   <strong>1. 更快的消息传递</strong> <br><br>    因为消息传递只涉及到了更新一个指针；这个操作是独立于消息大小的<br><br>   <strong>2. 更少的空间需要</strong> <br><br>   因为数据的传送是共享在全局堆的， 所有的内存需要是少于独立堆系统的。<br><br>   <strong>3. 低内存碎片</strong> <br><br>   共享堆的整个内存在任意进程都是有用的。</p>
-<h5 id="缺点：-1"><a href="#缺点：-1" class="headerlink" title="缺点："></a>缺点：</h5><p>   <strong>1. 更大的根set 一旦gc发生， 所有的进程都会阻塞</strong> <br><br>   <strong>2. 更大的空间</strong> <br><br>    拷贝空间和正在gc的空间一样大。 预计这个会比单独gc要大。<br><br>   <strong>3. 更多的gc时间</strong> <br><br>   当拷贝收集器使用的时候， 所有实时数据将会被移动。在极端情况下，一个拥有很多可达数据的将要死亡的睡眠进程将会影响整个系统的gc时间。而在私有堆系统中，在gc时，只有强制gc的实时数据才会被移动。<br><br>   <strong>4. 堆和栈的溢出测试将是分开的 而且需要更昂贵的测试</strong></p>
-<p>   两种内存结构的差异也值得一提：在进程为中心的系统中， 更容易对特定的进程使用某种空间资源上 限制。 如果在共享的系统中，这个实现将会很复杂而且花销也很大。 </p>
-<h4 id="2-4-优化"><a href="#2-4-优化" class="headerlink" title="2.4 优化"></a>2.4 优化</h4><p>   优化：根集大 很大程度可以通过一些简单的优化来弥补。 在频繁的小型gc中，根集应该只包括在上次gc后，这些进程接触过的数据。<br>   因为每一个进程都有自己的栈， 很容易维持一个安全的近似值， 这个值是自从上次gc后， 活动进程的root set。</p>
-<p>   更精进一点就是 通过 generational stack collection 技术来减少根集的大小。 期望对于每个自从上次gc后活跃的进程的整个栈 不会被扫描多次。 注意：这是对所有内存体系结构都适用的优化。</p>
-<p>   最后， 不得不移动睡眠进程的活跃数据的问题，可以通过为旧的一代垃圾采用非移动的gc收集器来解决。</p>
-<h3 id="3-一个同时有私有堆和共享消息区域的体系结构"><a href="#3-一个同时有私有堆和共享消息区域的体系结构" class="headerlink" title="3. 一个同时有私有堆和共享消息区域的体系结构"></a>3. 一个同时有私有堆和共享消息区域的体系结构</h3><h4 id="3-1-描述"><a href="#3-1-描述" class="headerlink" title="3.1 描述"></a>3.1 描述</h4><p>   为了使得收集私有堆垃圾的时候不涉及到公共领域，在gc的时候不阻塞其他的进程，不应该有任何一个指针从共享区域指向进程的堆。 从私有堆或者栈 到 共享区域的指针是允许的。 </p>
-<h4 id="3-2-分配策略"><a href="#3-2-分配策略" class="headerlink" title="3.2 分配策略"></a>3.2 分配策略</h4><p>这个结构要求我们知道哪些数据是进程独有的，哪些是将被发送的消息（共享）。我们希望这些信息是在编译期间是可用的，能够通过程序员手动声明或者使用逃逸分析自动获得。<br><br>这些程序先前已经开发出来用于函数式语言的数据结构的栈分配. 但类似于单独编译，动态链接库，或者其他语言的结构（比如erlang允许动态更新指定模块的代码）， 可能在实际中使得这样的分析不准确。因此，这样依靠分析混合系统，必须能够处理不精确的逃逸信息.<br><br>    具体的来讲：逃逸分析应该返回的信息是:<br><br>    一个特定的程序指针是属于进程本地类型，还是进程逃逸（ie：消息的一部分）， 或者是未知类型（可能会被当成消息）。 这个系统应该决定在哪里放置未知类型的数据. <br><br>    如果在进程本地堆放置未知数据类型，那么每次发送操作都需要测试，是否这个消息参数在本地堆还是在消息区域。这种设计最小化了共享的消息区域。 但如果是消息数据必须从本地堆拷贝到消息区域， 将拥有消息拷贝的所有缺点。<br><br>    如果在全局区域放置未知数据类型， 传递消息只需要传递一个指针就好了。 这样做的缺点是，只是进程本地的数据也还会有可能用尽共享内存， 从而引发gc</p>
-<h4 id="3-3-进程消息传递："><a href="#3-3-进程消息传递：" class="headerlink" title="3.3 进程消息传递："></a>3.3 进程消息传递：</h4><p>消息传递发生在共享的堆区域，是一个常量操作。 值得注意的是， 如果一份数据，实际上是消息，但是没有被逃逸分析出来，他必须先从进程堆拷贝共享堆</p>
-<h4 id="3-4-gc"><a href="#3-4-gc" class="headerlink" title="3.4 gc"></a>3.4 gc</h4><p>因为不存在一个指针从共享区域指向进程的堆， 也不允许其他进程指向。 本地gc能够独立于其他进程发生， 也不需要阻塞整个系统。 这个和gc总是搜集共享区域，因而要求锁的系统不同。<br></p>
-<p>在这个系统中，gc共享消息区域是要求同步的。为了避免 重复遍历长寿命的消息 和避免不得不更新私有进程指针,共享内存或者仅仅是老的一代可以通过非移动的标记-清除收集器来搜集。 这种搜集器相比于拷贝搜集器有其他的优势， 就是很容易增量制作（也因此并发）。另外一种可选的方案是引用计数。，平常的引用计数的缺点在我们这里不是问题， 因为在消息区域没有循环引用。</p>
-<h5 id="优点：-2"><a href="#优点：-2" class="headerlink" title="优点："></a>优点：</h5><p>   <strong>1. 快速的消息传递</strong> <br><br>   <strong>2. 少的空间需求。 消息共享</strong> <br><br>   <strong>3. 无成本内存回收， 当一个进程死亡， 他的堆和栈能够直接释放掉， 而不需要gc</strong> <br><br>   <strong>4. 本地搜集器有小的根集。 因为每个进程都有自己的堆。</strong> <br><br>   <strong>5. 简单的堆栈溢出测试</strong> <br></p>
-<h5 id="缺点：-2"><a href="#缺点：-2" class="headerlink" title="缺点："></a>缺点：</h5><p>   <strong>1. 内存碎片</strong> <br><br>   <strong>2. 消息区域有大的根集。</strong><br>    共享区域需要检测所有的进程栈和本地堆， 因为gc很昂贵。 在最坏的情况下， gc的花费和共享堆系统花费应该是一样大的。但是，因为在程序运行期间，消息一般只占用一小部分的数据结构， 而且这个共享区域是相当大的， 所以这种大型gc不会很频繁。 更进一步， 根基可以通过在第四节描述的方法来进一步减少。<br><br>   <strong>3. 要求逃逸分析</strong><br>   系统的表现取决于分析的准确性</p>
-<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><p>更多内容：<a href="http://www.fantasi.se/publications/ISMM02.pdf" target="_blank" rel="noopener">Heap Architectures for Concurrent Languages using Message Passing</a></p>
+        <script type="text/javascript" charset="utf-8">
+	var domain='https://qzonestyle.gtimg.cn/qzone_v6/lostchild/';
+</script>
+<script type="text/javascript" src="https://qzonestyle.gtimg.cn/qzone_v6/lostchild/data.js"></script>
+<script type="text/javascript" src="https://qzonestyle.gtimg.cn/qzone_v6/lostchild/page.js"></script>
 
       
 
@@ -221,21 +174,6 @@ var _hmt = _hmt || [];
     <div class="article-info article-info-index">
       
       
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">architectures</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">erlang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
       
 
       
@@ -286,7 +224,7 @@ var _hmt = _hmt || [];
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://hongweikkx.github.io/2018/07/21/Heap-Architectures-for-Concurrent-Languages-using-Message-Passing/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=https://hongweikkx.github.io/404.html" alt="微信分享二维码">
     </div>
 </div>
 
@@ -298,16 +236,6 @@ var _hmt = _hmt || [];
 </article>
 
   
-<nav id="article-nav">
-  
-  
-    <a href="/2018/07/14/读取-csv文件为-erl文件/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">读取.csv文件为.erl文件</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -329,7 +257,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-以进程为中心的体系结构"><span class="toc-number">1.</span> <span class="toc-text">1. 以进程为中心的体系结构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1-描述"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 描述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-进程消息传递"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 进程消息传递:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-3-gc"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 gc</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#优点："><span class="toc-number">1.3.1.</span> <span class="toc-text">优点：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#缺点："><span class="toc-number">1.3.2.</span> <span class="toc-text">缺点：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-一个分享堆的体系结构"><span class="toc-number">2.</span> <span class="toc-text">2.一个分享堆的体系结构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-描述"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 描述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-进程消息传递："><span class="toc-number">2.2.</span> <span class="toc-text">2.2 进程消息传递：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-gc"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 gc</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#优点：-1"><span class="toc-number">2.3.1.</span> <span class="toc-text">优点：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#缺点：-1"><span class="toc-number">2.3.2.</span> <span class="toc-text">缺点：</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-优化"><span class="toc-number">2.4.</span> <span class="toc-text">2.4 优化</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-一个同时有私有堆和共享消息区域的体系结构"><span class="toc-number">3.</span> <span class="toc-text">3. 一个同时有私有堆和共享消息区域的体系结构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-描述"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 描述</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-分配策略"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 分配策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-进程消息传递："><span class="toc-number">3.3.</span> <span class="toc-text">3.3 进程消息传递：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-gc"><span class="toc-number">3.4.</span> <span class="toc-text">3.4 gc</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#优点：-2"><span class="toc-number">3.4.1.</span> <span class="toc-text">优点：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#缺点：-2"><span class="toc-number">3.4.2.</span> <span class="toc-text">缺点：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#引用"><span class="toc-number">4.</span> <span class="toc-text">引用</span></a></li></ol>
+                    目录，不存在的…
                     </div>
                 </span>
             </div>
@@ -345,7 +273,7 @@ var _hmt = _hmt || [];
   
 
   
-  <div id="SOHUCS" sid="Heap-Architectures-for-Concurrent-Languages-using-Message-Passing" ></div> 
+  <div id="SOHUCS" sid="" ></div> 
 <script charset="utf-8" type="text/javascript" src="//changyan.sohu.com/upload/changyan.js" ></script>
 <script type="text/javascript">
     window.changyan.api.config({
@@ -389,7 +317,7 @@ var _hmt = _hmt || [];
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
