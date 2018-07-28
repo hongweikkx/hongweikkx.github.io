@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://hongweikkx.github.io/"/>
-  <updated>2018-07-20T18:32:33.689Z</updated>
+  <updated>2018-07-28T07:04:28.126Z</updated>
   <id>https://hongweikkx.github.io/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>hibernate and why gen_server2?</title>
+    <link href="https://hongweikkx.github.io/2018/07/28/hibernate-and-why-gen-server2/"/>
+    <id>https://hongweikkx.github.io/2018/07/28/hibernate-and-why-gen-server2/</id>
+    <published>2018-07-28T06:54:17.000Z</published>
+    <updated>2018-07-28T07:04:28.126Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="hibernate-休眠"><a href="#hibernate-休眠" class="headerlink" title="hibernate - 休眠"></a>hibernate - 休眠</h2><h4 id="1-描述："><a href="#1-描述：" class="headerlink" title="1. 描述："></a>1. 描述：</h4><p>&#8194;&#8194;&#8194; 使进程进入一个最小内存分配的等待状态。 如果这个进程并没有期望近期接收任何消息， 那么这个状态是有用的。<br><a id="more"></a></p><h4 id="2-行为："><a href="#2-行为：" class="headerlink" title="2. 行为："></a>2. 行为：</h4><ul><li>会丢掉进程调用栈，然后 进行gc。 这样所有的活数据就会在一个连续的堆中。 这个堆大小几近相当于所有活数据的大小（即便这个大小小于最小进程堆大小） .  如果所有活数据大小小于最小进程堆大小的话，在醒来后就会发生一次gc，用于保证进程堆大小不小于最小进程堆大小. 所以hibernate 可能触发了两次gc,一次是休眠的时候(必然) ,另一次是醒来不久(可能)。 这个是很耗cpu的，所以一般不会主动做这件事情。   </li><li>catch 也会被清除， 所以必须在醒来的时候重新插入。 直接或者间接用proc_lib 开始的进程（包括<code>gen_server</code>)， 要用<code>proc_lib:hibernate/3</code> 来确保 异常处理程序在醒来的时候能够继续工作   </li><li>控制会在指定参数的<code>module:function</code>，调用栈为空的情况下恢复， 意味着这个函数返回的时候，进程就终止了,所以<code>erlang:hibernate/3</code> 不返回任何东西给调用者。 </li><li>wake up: <ul><li>只要有信息发送到进程，该进程就会醒来。</li><li>如果消息邮箱有任何信息， 该进程也会立马醒来</li></ul></li></ul><h2 id="gen-server2"><a href="#gen-server2" class="headerlink" title="gen_server2"></a>gen_server2</h2><h4 id="init-函数"><a href="#init-函数" class="headerlink" title="init 函数"></a>init 函数</h4><p>&#8194;&#8194;&#8194; init 函数可以返回第4个参数, <code>{backoff, InitalTimeout, MinimumTimeout, DesiredHibernatePeriod}</code>，这样就设置为backoff 模式， 这里所有的参数都是毫秒级，infinity 在这里是无意义的。<br><br>&#8194;&#8194;&#8194; 之后所有能够返回timeout的回调模块（包括init），timeout后都会hibernate。 在这个模式中， 当前的timeout将会被用来另做他用。 初始值是由InitalTimeout 决定的。 当这次timeout后，就会进入休眠。 在醒来之后，新的timeout值将会被计算出来。<br><br>&#8194;&#8194;&#8194; 这样做的目的是, gen_server2 可以调整现在的timeout 值，如果不能在DesiredHibernatePeriod 休眠的话， timeout 值将会重复增加。如果在期间休眠的话， timeout值将会减少成最小的值。 这样可以使得进程更快的投入休眠（而且期望待在睡眠状态很久）。 简单的说就是， 如果一个进程接收到一大堆消息， 那么他就应该在这些消息中间，不进行睡眠。 但是如果消息变得稀少， 进程不仅仅会休眠， 而且也会很快的休眠。</p><h4 id="backoff-模式-timeout"><a href="#backoff-模式-timeout" class="headerlink" title="backoff 模式 timeout"></a>backoff 模式 timeout</h4><p>&#8194;&#8194;&#8194; 当使用backoff 模式, 但是没有设置hiberbnate的时候， 正常的timeout值仍然可以被使用， <code>handle_info(timeout, State)</code> 也会被正常调用。<br>&#8194;&#8194;&#8194; 在backoff 模式下， 如果<code>handle_info(timeout, State)</code>函数中返回hibernate， 将不会立即休眠，相反，将会等待休眠的timeout 才会休眠。 </p><h4 id="优先级消息"><a href="#优先级消息" class="headerlink" title="优先级消息"></a>优先级消息</h4><p>&#8194;&#8194;&#8194; 回调模块可以可选的实现 优先级消息。 高优先级的会优先选择执行</p><h4 id="更加有效率的选择性接收，-更小的可能去扫描一个大的消息队列"><a href="#更加有效率的选择性接收，-更小的可能去扫描一个大的消息队列" class="headerlink" title="更加有效率的选择性接收， 更小的可能去扫描一个大的消息队列"></a>更加有效率的选择性接收， 更小的可能去扫描一个大的消息队列</h4><ol><li>不断的从进程邮箱中读取消息，放入优先级队列中去</li><li>如果有消息， 通过优先级队列,处理最大优先级执行的消息,<br> &#8194;如果返回hibernate 并且不是backoff，先调用pre_hibernate ，再调用<code>proc_lib:hibernate</code>， 醒来时receive所有message, 加到Queue里，再调用post_hibernate，然后处理Queue里的message<br>  否则继续loop 1 </li><li>如果处理时发现优先级队列为空，<ul><li>如果有hibernate,也有backoff, 直接去receive,然后加到Queue,如果timeout，去call pre_hibernate, hibernate,wake 以后重新调整timeout。</li><li>如果有hibernate，没有backoff, 将timeout设成 infinity， 在那一直去receive（边睡边等）</li><li>如果没有hibernate, 直接去receive，然后加到Queue。如果timeout, 就由handle_info来处理</li></ul></li></ol><h4 id="handle-pre-hibernate-and-handle-post-hibernate"><a href="#handle-pre-hibernate-and-handle-post-hibernate" class="headerlink" title="handle_pre_hibernate and handle_post_hibernate"></a>handle_pre_hibernate and handle_post_hibernate</h4><p>&#8194;&#8194;&#8194;回调模块可以可选的实现 <code>handle_pre_hibernate/1</code> and <code>handle_post_hibernate</code>. <br><br>&#8194;&#8194;&#8194;如果<code>handle_pre_hibernate/1</code> 返回 {hibernate, NewState} ， 进程将会休眠。<br><br>&#8194;&#8194;&#8194;如果模块没有实现 <code>handle_pre_hibernate/1</code>, 那么接下来默认的行为将会是 hibernate</p><h4 id="gen-server2-cast-是保证顺序的。"><a href="#gen-server2-cast-是保证顺序的。" class="headerlink" title="gen_server2:cast 是保证顺序的。"></a>gen_server2:cast 是保证顺序的。</h4><p>   原始的代码可能在与当前未连接的远程进程通信的时候，重新对消息排序。 因为会spawn进程 这样的话会导致消息发送排序不是原来的顺序.  gen_server2 去掉了 send 函数的 noconnect 参数,  不会在与当前未连接的远程进程通信的时候spawn</p><h4 id="become-Module-State"><a href="#become-Module-State" class="headerlink" title="{become,Module,State}"></a>{become,Module,State}</h4><p>&#8194;&#8194;&#8194; 所有的回调都可以返回{become,Module,State} 或者 {become, Module, State, Timeout} 这个可以允许gen_server动态改变自己的callback 模块。 State是新 state<br>&#8194;&#8194;&#8194;注意，这里没有一种形式可以包括一个reply， 所以你需要手动reply。 init 函数也可以相似的返回一个第五个参数， module， 为了动态决定用哪个callback module 去init</p><h4 id="format-message-queue-2"><a href="#format-message-queue-2" class="headerlink" title="format_message_queue/2"></a>format_message_queue/2</h4><p>&#8194;&#8194;&#8194;callback module 可以定制化实现 <code>format_message_queue/2</code> 就类似于 <code>format_status/2</code>, 但是他的第二个参数是优先级队列， 包含优先级消息队列</p><h4 id="with-state-2"><a href="#with-state-2" class="headerlink" title="with_state/2"></a>with_state/2</h4><h4 id="multi-call"><a href="#multi-call" class="headerlink" title="multi_call"></a>multi_call</h4><p>&#8194;&#8194;&#8194;mcall 函数增加了性能更好的并行multi_call。 multi_call 发送相同的请求给列表中相同名字的进程。 他在name/request 对上操作， 名称可以是任何被call/3 接收的参数。<br><br>&#8194;&#8194;&#8194; 两个的机制不同，mcall 只是起了一个monitor 在新进程中 给每一个请求列表中的进程发送消息， 将ref存储在dict中，并接收返回。 返回成功后 返回原进程消息。 <br><br>&#8194;&#8194;&#8194;mutlti_call 每个消息建立一个进程， 然后接收返回（先发送的要先接受) 两秒后如果接收不到 就不成功）。  </p><h2 id="why-gen-server2"><a href="#why-gen-server2" class="headerlink" title="why gen_server2?"></a>why gen_server2?</h2><ol><li>gen_server2 通过优先级队列， 防止了进程需要遍历整个邮箱的可能</li><li>实现了消息优先级</li><li>hibernate 退避机制</li></ol><p>其实我并没有遇到需要优化gen_server 到 gen_server2的项目， 有点纸上谈兵。 不过理解gen_server2 也让我了解了gen_server 的一些“缺点”， 毕竟需要根据项目定制， 就说明原本的gen_server 在那个项目中是有使用”缺陷”的。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;hibernate-休眠&quot;&gt;&lt;a href=&quot;#hibernate-休眠&quot; class=&quot;headerlink&quot; title=&quot;hibernate - 休眠&quot;&gt;&lt;/a&gt;hibernate - 休眠&lt;/h2&gt;&lt;h4 id=&quot;1-描述：&quot;&gt;&lt;a href=&quot;#1-描述：&quot; class=&quot;headerlink&quot; title=&quot;1. 描述：&quot;&gt;&lt;/a&gt;1. 描述：&lt;/h4&gt;&lt;p&gt;&amp;#8194;&amp;#8194;&amp;#8194; 使进程进入一个最小内存分配的等待状态。 如果这个进程并没有期望近期接收任何消息， 那么这个状态是有用的。&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="erlang" scheme="https://hongweikkx.github.io/tags/erlang/"/>
+    
+      <category term="性能优化" scheme="https://hongweikkx.github.io/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/"/>
+    
+  </entry>
   
   <entry>
     <title>Heap-Architectures-for-Concurrent-Languages-using-Message-Passing</title>
@@ -32,9 +54,9 @@
     </summary>
     
     
-      <category term="architectures" scheme="https://hongweikkx.github.io/tags/architectures/"/>
-    
       <category term="erlang" scheme="https://hongweikkx.github.io/tags/erlang/"/>
+    
+      <category term="architectures" scheme="https://hongweikkx.github.io/tags/architectures/"/>
     
   </entry>
   

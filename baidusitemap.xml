@@ -3,6 +3,25 @@
 
 
     
+  <url>
+    <loc>https://hongweikkx.github.io/2018/07/28/hibernate-and-why-gen-server2/</loc>
+    <lastmod>2018-07-28T07:04:28.126Z</lastmod>
+    <data>
+        <display>
+        <title>hibernate and why gen_server2?</title>
+        <pubTime>2018-07-28T06:54:17.000Z</pubTime>
+        
+        <tag>erlang</tag>
+         
+        <tag>性能优化</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
     
   <url>
     <loc>https://hongweikkx.github.io/2018/07/21/Heap-Architectures-for-Concurrent-Languages-using-Message-Passing/</loc>
@@ -12,9 +31,9 @@
         <title>Heap-Architectures-for-Concurrent-Languages-using-Message-Passing</title>
         <pubTime>2018-07-20T17:58:24.000Z</pubTime>
         
-        <tag>architectures</tag>
-         
         <tag>erlang</tag>
+         
+        <tag>architectures</tag>
          
          
            

@@ -7,18 +7,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://hongweikkx.github.io">
-  <title>Archives | kkx&#39;s blogs</title>
+  <title>hibernate and why gen_server2? | kkx&#39;s blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="blog">
-<meta property="og:type" content="website">
-<meta property="og:title" content="kkx&#39;s blogs">
-<meta property="og:url" content="https://hongweikkx.github.io/archives/index.html">
+  <meta name="description" content="hibernate - 休眠1. 描述：&amp;#8194;&amp;#8194;&amp;#8194; 使进程进入一个最小内存分配的等待状态。 如果这个进程并没有期望近期接收任何消息， 那么这个状态是有用的。">
+<meta name="keywords" content="erlang,性能优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hibernate and why gen_server2?">
+<meta property="og:url" content="https://hongweikkx.github.io/2018/07/28/hibernate-and-why-gen-server2/index.html">
 <meta property="og:site_name" content="kkx&#39;s blogs">
-<meta property="og:description" content="blog">
+<meta property="og:description" content="hibernate - 休眠1. 描述：&amp;#8194;&amp;#8194;&amp;#8194; 使进程进入一个最小内存分配的等待状态。 如果这个进程并没有期望近期接收任何消息， 那么这个状态是有用的。">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-07-28T07:04:28.126Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="kkx&#39;s blogs">
-<meta name="twitter:description" content="blog">
+<meta name="twitter:title" content="hibernate and why gen_server2?">
+<meta name="twitter:description" content="hibernate - 休眠1. 描述：&amp;#8194;&amp;#8194;&amp;#8194; 使进程进入一个最小内存分配的等待状态。 如果这个进程并没有期望近期接收任何消息， 那么这个状态是有用的。">
   
     <link rel="alternative" href="/atom.xml" title="kkx&#39;s blogs" type="application/atom+xml">
   
@@ -156,36 +158,74 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-hibernate-and-why-gen-server2" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/28/hibernate-and-why-gen-server2/" class="archive-article-date">
-  	<time datetime="2018-07-28T06:54:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-28</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/28/hibernate-and-why-gen-server2/">hibernate and why gen_server2?</a>
+    <h1 class="article-title" itemprop="name">
+      hibernate and why gen_server2?
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/07/28/hibernate-and-why-gen-server2/" class="archive-article-date">
+  	<time datetime="2018-07-28T06:54:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-28</time>
+</a>
+        
+        
+           <span class="archive-article-date">
+              阅读量 <span id="busuanzi_value_page_pv"></span>
+              </span>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="hibernate-休眠"><a href="#hibernate-休眠" class="headerlink" title="hibernate - 休眠"></a>hibernate - 休眠</h2><h4 id="1-描述："><a href="#1-描述：" class="headerlink" title="1. 描述："></a>1. 描述：</h4><p>&#8194;&#8194;&#8194; 使进程进入一个最小内存分配的等待状态。 如果这个进程并没有期望近期接收任何消息， 那么这个状态是有用的。<br><a id="more"></a></p>
+<h4 id="2-行为："><a href="#2-行为：" class="headerlink" title="2. 行为："></a>2. 行为：</h4><ul>
+<li>会丢掉进程调用栈，然后 进行gc。 这样所有的活数据就会在一个连续的堆中。 这个堆大小几近相当于所有活数据的大小（即便这个大小小于最小进程堆大小） .  如果所有活数据大小小于最小进程堆大小的话，在醒来后就会发生一次gc，用于保证进程堆大小不小于最小进程堆大小. 所以hibernate 可能触发了两次gc,一次是休眠的时候(必然) ,另一次是醒来不久(可能)。 这个是很耗cpu的，所以一般不会主动做这件事情。   </li>
+<li>catch 也会被清除， 所以必须在醒来的时候重新插入。 直接或者间接用proc_lib 开始的进程（包括<code>gen_server</code>)， 要用<code>proc_lib:hibernate/3</code> 来确保 异常处理程序在醒来的时候能够继续工作   </li>
+<li>控制会在指定参数的<code>module:function</code>，调用栈为空的情况下恢复， 意味着这个函数返回的时候，进程就终止了,所以<code>erlang:hibernate/3</code> 不返回任何东西给调用者。 </li>
+<li>wake up: <ul>
+<li>只要有信息发送到进程，该进程就会醒来。</li>
+<li>如果消息邮箱有任何信息， 该进程也会立马醒来</li>
+</ul>
+</li>
+</ul>
+<h2 id="gen-server2"><a href="#gen-server2" class="headerlink" title="gen_server2"></a>gen_server2</h2><h4 id="init-函数"><a href="#init-函数" class="headerlink" title="init 函数"></a>init 函数</h4><p>&#8194;&#8194;&#8194; init 函数可以返回第4个参数, <code>{backoff, InitalTimeout, MinimumTimeout, DesiredHibernatePeriod}</code>，这样就设置为backoff 模式， 这里所有的参数都是毫秒级，infinity 在这里是无意义的。<br><br>&#8194;&#8194;&#8194; 之后所有能够返回timeout的回调模块（包括init），timeout后都会hibernate。 在这个模式中， 当前的timeout将会被用来另做他用。 初始值是由InitalTimeout 决定的。 当这次timeout后，就会进入休眠。 在醒来之后，新的timeout值将会被计算出来。<br><br>&#8194;&#8194;&#8194; 这样做的目的是, gen_server2 可以调整现在的timeout 值，如果不能在DesiredHibernatePeriod 休眠的话， timeout 值将会重复增加。如果在期间休眠的话， timeout值将会减少成最小的值。 这样可以使得进程更快的投入休眠（而且期望待在睡眠状态很久）。 简单的说就是， 如果一个进程接收到一大堆消息， 那么他就应该在这些消息中间，不进行睡眠。 但是如果消息变得稀少， 进程不仅仅会休眠， 而且也会很快的休眠。</p>
+<h4 id="backoff-模式-timeout"><a href="#backoff-模式-timeout" class="headerlink" title="backoff 模式 timeout"></a>backoff 模式 timeout</h4><p>&#8194;&#8194;&#8194; 当使用backoff 模式, 但是没有设置hiberbnate的时候， 正常的timeout值仍然可以被使用， <code>handle_info(timeout, State)</code> 也会被正常调用。<br>&#8194;&#8194;&#8194; 在backoff 模式下， 如果<code>handle_info(timeout, State)</code>函数中返回hibernate， 将不会立即休眠，相反，将会等待休眠的timeout 才会休眠。 </p>
+<h4 id="优先级消息"><a href="#优先级消息" class="headerlink" title="优先级消息"></a>优先级消息</h4><p>&#8194;&#8194;&#8194; 回调模块可以可选的实现 优先级消息。 高优先级的会优先选择执行</p>
+<h4 id="更加有效率的选择性接收，-更小的可能去扫描一个大的消息队列"><a href="#更加有效率的选择性接收，-更小的可能去扫描一个大的消息队列" class="headerlink" title="更加有效率的选择性接收， 更小的可能去扫描一个大的消息队列"></a>更加有效率的选择性接收， 更小的可能去扫描一个大的消息队列</h4><ol>
+<li>不断的从进程邮箱中读取消息，放入优先级队列中去</li>
+<li>如果有消息， 通过优先级队列,处理最大优先级执行的消息,<br> &#8194;如果返回hibernate 并且不是backoff，先调用pre_hibernate ，再调用<code>proc_lib:hibernate</code>， 醒来时receive所有message, 加到Queue里，再调用post_hibernate，然后处理Queue里的message<br>  否则继续loop 1 </li>
+<li>如果处理时发现优先级队列为空，<ul>
+<li>如果有hibernate,也有backoff, 直接去receive,然后加到Queue,如果timeout，去call pre_hibernate, hibernate,wake 以后重新调整timeout。</li>
+<li>如果有hibernate，没有backoff, 将timeout设成 infinity， 在那一直去receive（边睡边等）</li>
+<li>如果没有hibernate, 直接去receive，然后加到Queue。如果timeout, 就由handle_info来处理</li>
+</ul>
+</li>
+</ol>
+<h4 id="handle-pre-hibernate-and-handle-post-hibernate"><a href="#handle-pre-hibernate-and-handle-post-hibernate" class="headerlink" title="handle_pre_hibernate and handle_post_hibernate"></a>handle_pre_hibernate and handle_post_hibernate</h4><p>&#8194;&#8194;&#8194;回调模块可以可选的实现 <code>handle_pre_hibernate/1</code> and <code>handle_post_hibernate</code>. <br><br>&#8194;&#8194;&#8194;如果<code>handle_pre_hibernate/1</code> 返回 {hibernate, NewState} ， 进程将会休眠。<br><br>&#8194;&#8194;&#8194;如果模块没有实现 <code>handle_pre_hibernate/1</code>, 那么接下来默认的行为将会是 hibernate</p>
+<h4 id="gen-server2-cast-是保证顺序的。"><a href="#gen-server2-cast-是保证顺序的。" class="headerlink" title="gen_server2:cast 是保证顺序的。"></a>gen_server2:cast 是保证顺序的。</h4><p>   原始的代码可能在与当前未连接的远程进程通信的时候，重新对消息排序。 因为会spawn进程 这样的话会导致消息发送排序不是原来的顺序.  gen_server2 去掉了 send 函数的 noconnect 参数,  不会在与当前未连接的远程进程通信的时候spawn</p>
+<h4 id="become-Module-State"><a href="#become-Module-State" class="headerlink" title="{become,Module,State}"></a>{become,Module,State}</h4><p>&#8194;&#8194;&#8194; 所有的回调都可以返回{become,Module,State} 或者 {become, Module, State, Timeout} 这个可以允许gen_server动态改变自己的callback 模块。 State是新 state<br>&#8194;&#8194;&#8194;注意，这里没有一种形式可以包括一个reply， 所以你需要手动reply。 init 函数也可以相似的返回一个第五个参数， module， 为了动态决定用哪个callback module 去init</p>
+<h4 id="format-message-queue-2"><a href="#format-message-queue-2" class="headerlink" title="format_message_queue/2"></a>format_message_queue/2</h4><p>&#8194;&#8194;&#8194;callback module 可以定制化实现 <code>format_message_queue/2</code> 就类似于 <code>format_status/2</code>, 但是他的第二个参数是优先级队列， 包含优先级消息队列</p>
+<h4 id="with-state-2"><a href="#with-state-2" class="headerlink" title="with_state/2"></a>with_state/2</h4><h4 id="multi-call"><a href="#multi-call" class="headerlink" title="multi_call"></a>multi_call</h4><p>&#8194;&#8194;&#8194;mcall 函数增加了性能更好的并行multi_call。 multi_call 发送相同的请求给列表中相同名字的进程。 他在name/request 对上操作， 名称可以是任何被call/3 接收的参数。<br><br>&#8194;&#8194;&#8194; 两个的机制不同，mcall 只是起了一个monitor 在新进程中 给每一个请求列表中的进程发送消息， 将ref存储在dict中，并接收返回。 返回成功后 返回原进程消息。 <br><br>&#8194;&#8194;&#8194;mutlti_call 每个消息建立一个进程， 然后接收返回（先发送的要先接受) 两秒后如果接收不到 就不成功）。  </p>
+<h2 id="why-gen-server2"><a href="#why-gen-server2" class="headerlink" title="why gen_server2?"></a>why gen_server2?</h2><ol>
+<li>gen_server2 通过优先级队列， 防止了进程需要遍历整个邮箱的可能</li>
+<li>实现了消息优先级</li>
+<li>hibernate 退避机制</li>
+</ol>
+<p>其实我并没有遇到需要优化gen_server 到 gen_server2的项目， 有点纸上谈兵。 不过理解gen_server2 也让我了解了gen_server 的一些“缺点”， 毕竟需要根据项目定制， 就说明原本的gen_server 在那个项目中是有使用”缺陷”的。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -201,179 +241,128 @@ var _hmt = _hmt || [];
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://hongweikkx.github.io/2018/07/28/hibernate-and-why-gen-server2/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/21/Heap-Architectures-for-Concurrent-Languages-using-Message-Passing/" class="archive-article-date">
-  	<time datetime="2018-07-20T17:58:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-21</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/07/21/Heap-Architectures-for-Concurrent-Languages-using-Message-Passing/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Heap-Architectures-for-Concurrent-Languages-using-Message-Passing</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/21/Heap-Architectures-for-Concurrent-Languages-using-Message-Passing/">Heap-Architectures-for-Concurrent-Languages-using-Message-Passing</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">erlang</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">architectures</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#hibernate-休眠"><span class="toc-number">1.</span> <span class="toc-text">hibernate - 休眠</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-描述："><span class="toc-number">1.0.1.</span> <span class="toc-text">1. 描述：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-行为："><span class="toc-number">1.0.2.</span> <span class="toc-text">2. 行为：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gen-server2"><span class="toc-number">2.</span> <span class="toc-text">gen_server2</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#init-函数"><span class="toc-number">2.0.1.</span> <span class="toc-text">init 函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#backoff-模式-timeout"><span class="toc-number">2.0.2.</span> <span class="toc-text">backoff 模式 timeout</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#优先级消息"><span class="toc-number">2.0.3.</span> <span class="toc-text">优先级消息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#更加有效率的选择性接收，-更小的可能去扫描一个大的消息队列"><span class="toc-number">2.0.4.</span> <span class="toc-text">更加有效率的选择性接收， 更小的可能去扫描一个大的消息队列</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#handle-pre-hibernate-and-handle-post-hibernate"><span class="toc-number">2.0.5.</span> <span class="toc-text">handle_pre_hibernate and handle_post_hibernate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#gen-server2-cast-是保证顺序的。"><span class="toc-number">2.0.6.</span> <span class="toc-text">gen_server2:cast 是保证顺序的。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#become-Module-State"><span class="toc-number">2.0.7.</span> <span class="toc-text">{become,Module,State}</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#format-message-queue-2"><span class="toc-number">2.0.8.</span> <span class="toc-text">format_message_queue/2</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#with-state-2"><span class="toc-number">2.0.9.</span> <span class="toc-text">with_state/2</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#multi-call"><span class="toc-number">2.0.10.</span> <span class="toc-text">multi_call</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#why-gen-server2"><span class="toc-number">3.</span> <span class="toc-text">why gen_server2?</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+        
+    </div>
+</aside>
+
+
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/14/读取-csv文件为-erl文件/" class="archive-article-date">
-  	<time datetime="2018-07-14T14:25:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-14</time>
-</a>
-        </div>
-    	 
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/14/读取-csv文件为-erl文件/">读取.csv文件为.erl文件</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">erlang</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">csv</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/14/erl-abstract-code/" class="archive-article-date">
-  	<time datetime="2018-07-14T14:19:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/14/erl-abstract-code/">erl&lt;=&gt;abstract_code</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">erlang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/13/erlang-热更新原理/" class="archive-article-date">
-  	<time datetime="2018-07-13T15:10:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-13</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/13/erlang-热更新原理/">erlang 热更新原理</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">erlang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+  <div id="SOHUCS" sid="hibernate-and-why-gen-server2" ></div> 
+<script charset="utf-8" type="text/javascript" src="//changyan.sohu.com/upload/changyan.js" ></script>
+<script type="text/javascript">
+    window.changyan.api.config({
+        appid: "cytIrPQMl",
+        conf: "prod_ecfba53555bc5ced777bdc962df94bd2"
+    });
+</script>
+</script>
   
   
-    </div></section>
-  
 
-    
+  
 
 
           </div>
@@ -405,8 +394,8 @@ var _hmt = _hmt || [];
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
