@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://hongweikkx.github.io/"/>
-  <updated>2018-08-24T15:23:35.613Z</updated>
+  <updated>2019-01-03T11:12:48.830Z</updated>
   <id>https://hongweikkx.github.io/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>protobuff vs json?</title>
+    <link href="https://hongweikkx.github.io/2019/01/03/protobuff-vs-json/"/>
+    <id>https://hongweikkx.github.io/2019/01/03/protobuff-vs-json/</id>
+    <published>2019-01-03T08:45:36.000Z</published>
+    <updated>2019-01-03T11:12:48.830Z</updated>
+    
+    <content type="html"><![CDATA[<p>本文讨论 protobuff 和 json 作为消息传递格式的优缺点。<br><br>消息处理的过程包括：接收到二进制 -&gt; 切包 -&gt; 解码 -&gt; 消息分发 -&gt; 处理消息 <br><br>所以我们决定从 1. 包的大小 2. 编解码速度 来讨论两者<br><a id="more"></a></p><h3 id="1-包的大小"><a href="#1-包的大小" class="headerlink" title="1. 包的大小"></a>1. 包的大小</h3><h4 id="protobuff-的编码方式"><a href="#protobuff-的编码方式" class="headerlink" title="protobuff 的编码方式"></a>protobuff 的编码方式</h4><p>在看protobuff 之前，我们需要知道pb并没有自己切tcp包的代码，常用的做法还是程序自己去做切包处理。切好包之后，自然会有几个问题？<br></p><ol><li>pb 是用 长度+type+data 来确定字段和字段的边界的么？<br></li><li>如果是 那么长度字段是定长的么？ 如果定长，那么长度字段是否太过浪费。。 <br></li><li>如果不是 长度+type+data, 那么怎么解决string的传输呢？毕竟int型可以定长，string肯定不是定长的。 <br></li></ol><p>pb用很聪明的方法解决了以上的问题：<br><br>pb在内部有六种基本数据类型。分别是 <br><br>-define(TYPE_VARINT, 0).<br><br>-define(TYPE_64BIT, 1).<br><br>-define(TYPE_STRING, 2).<br><br>-define(TYPE_START_GROUP, 3).<br><br>-define(TYPE_END_GROUP, 4).<br><br>-define(TYPE_32BIT, 5).<br></p><h6 id="0-TYPE-VARINT"><a href="#0-TYPE-VARINT" class="headerlink" title="0. TYPE_VARINT"></a>0. TYPE_VARINT</h6><p>程序在定义proto中用到的sint32 int32 uint64 bool enum 等都属于TYPE_VARINT 类型. 使用filedid + type + value 的方式来做。但是这并不表示value是定长的，其实pb用每个字节的第一个比特作为标识位，如果标识位为1，则下个字节就是属于这个value的，否则就不是。</p><h6 id="1-TYPE-64BIT-5-TYPE-32BIT"><a href="#1-TYPE-64BIT-5-TYPE-32BIT" class="headerlink" title="1.TYPE_64BIT  5.TYPE_32BIT"></a>1.TYPE_64BIT  5.TYPE_32BIT</h6><p>proto中用到的 fixed32，float属于TYPE_32BIT。fixed64，double 属于TYPE_32BIT. 使用filedid+type+value来做。其中value是定长的</p><h6 id="2-TYPE-STRING"><a href="#2-TYPE-STRING" class="headerlink" title="2. TYPE_STRING"></a>2. TYPE_STRING</h6><p>proto中用到的 string bytes 属于 TYPE_STRING. 使用filedid+type+len+value. 这样可以使得string不是定长的。其中len不是定长的，是用varint的方式来表示的。</p><h4 id="json-vs-protobuff"><a href="#json-vs-protobuff" class="headerlink" title="json vs protobuff"></a>json vs protobuff</h4><p>json很简单，json在未经压缩的情况下，是要比pb的包大的。<br><br>参考：<a href="https://google.github.io/flatbuffers/flatbuffers_benchmarks.html" target="_blank" rel="noopener">https://google.github.io/flatbuffers/flatbuffers_benchmarks.html</a></p><h3 id="2-编解码速度"><a href="#2-编解码速度" class="headerlink" title="2. 编解码速度"></a>2. 编解码速度</h3><p>参考：<a href="https://google.github.io/flatbuffers/flatbuffers_benchmarks.html" target="_blank" rel="noopener">https://google.github.io/flatbuffers/flatbuffers_benchmarks.html</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;本文讨论 protobuff 和 json 作为消息传递格式的优缺点。&lt;br&gt;&lt;br&gt;消息处理的过程包括：接收到二进制 -&amp;gt; 切包 -&amp;gt; 解码 -&amp;gt; 消息分发 -&amp;gt; 处理消息 &lt;br&gt;&lt;br&gt;所以我们决定从 1. 包的大小 2. 编解码速度 来讨论两者&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="protobuff" scheme="https://hongweikkx.github.io/tags/protobuff/"/>
+    
+      <category term="json" scheme="https://hongweikkx.github.io/tags/json/"/>
+    
+  </entry>
   
   <entry>
     <title>golang  用函数名动态调用函数（包括变参函数)</title>
@@ -96,9 +118,9 @@
     </summary>
     
     
-      <category term="architectures" scheme="https://hongweikkx.github.io/tags/architectures/"/>
-    
       <category term="erlang" scheme="https://hongweikkx.github.io/tags/erlang/"/>
+    
+      <category term="architectures" scheme="https://hongweikkx.github.io/tags/architectures/"/>
     
   </entry>
   
