@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://hongweikkx.github.io/"/>
-  <updated>2019-01-03T11:12:48.830Z</updated>
+  <updated>2019-01-26T10:40:49.030Z</updated>
   <id>https://hongweikkx.github.io/</id>
   
   <author>
@@ -15,6 +15,49 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>(感)禅与摩托车维修艺术</title>
+    <link href="https://hongweikkx.github.io/2019/01/26/%E6%84%9F-%E7%A6%85%E4%B8%8E%E6%91%A9%E6%89%98%E8%BD%A6%E7%BB%B4%E4%BF%AE%E8%89%BA%E6%9C%AF/"/>
+    <id>https://hongweikkx.github.io/2019/01/26/感-禅与摩托车维修艺术/</id>
+    <published>2019-01-26T10:36:28.000Z</published>
+    <updated>2019-01-26T10:40:49.030Z</updated>
+    
+    <content type="html"><![CDATA[<p>哪怕霍金称这本书可以让人们不必处于伟大的智慧和哲学之外，它仍然是一本难以读下去的书，<br>尤其是当你看完书，去总结“良质” 的时候，那些散落的观点，似乎都在说，“良质是拒绝被定义的”。 有人用心电交流，进取心，喜欢，内心平静，活在此处来定义”良质“， 很显然都是有失偏颇的。良质包括了他们所有，而他们却并非等同于良质。<br> <a id="more"></a><br>秉承作者在文中所说”我认为如果能够改善人们每天的生活，那么哲学就是好的，否则宁可忘记它”,so，，，暂时忘掉对于良质的定义，可以看下作者提出的良质对于我们生活有什么影响。</p><p>比如写作，作者让学生去写一篇关于波斯曼（城市）的文章，可是学生没有办法下笔， 因为她想不出波斯曼有什么值得重复写下来的地方。</p><p>又比如摩托车，现代工业的产物，人们喜欢使用它，也喜欢用各种东西来装饰它，并希望它可以一直运行良好的运行下去。但问题总会出现，而且我们没有办法从表面上看出摩托车的问题到底出在哪里，所以只能气愤的把车交给维修的技术人员。而技术人员也只会用通用的方法去解决这个问题，根本不关心眼前的这辆摩托车的个性问题。</p><p>作者把这些都归结于理性科学和浪漫表象之间的对立隔离。而良质的提出就是要找到解决的方法，扩展理性的范围，涵盖非理性的层面。</p><p>比如写作，当作者将问题的范围从波斯曼缩小到一块砖的时候， 学生终于有的写了， 因为她必须直接的，不受任何阻碍的观察这块砖（浪漫），而且之前也没有人写这块砖， 她不需要去模仿任何人。作者认为从写作的角度出发， 模仿是一种罪恶，因为有太多的规则需要被遵守， 而真正的作家在写作的时候是没有那些原则的， 他们只是把他们认为对的东西写下来， 然后再回头看看是否有问题， 如果修辞不对，可以再修正。红楼梦里面曹公借林黛玉之口讲做诗的时候， 说出的“词不毁意” 也正是这个意思。</p><p>又比如修理摩托车，作者认为你需要关心摩托车，不应该一出现问题就交给技术人员。即使你不知所措，被问题卡住，也可以摸索的前进。作者认为传统理性，最大的遗憾就是不曾教导人们在卡住的时候如何自己摸索着解决问题。</p><p>所有上面的解决都是良质，so，，，良质到底是什么？<br>其实良质是一个事件，而不是一个品质。我认为良质是用心的观察和感受，并心平气和的关注于你当下的工作，将工作完成到你认为对的，或者你喜欢的层面，并根据工作的反应，调整你认为对或者喜欢的方向，持续的优化。</p><p>整本书虽然作者在提出良质，解释良质。 但书中观点总是应接不暇， 比如科学的无限假设，休谟科学的经验主义 vs 康德的直觉和感官认知 的思辨，柏拉图和亚里士多德等。 当然书中还提出了在追逐良质的过程中，可能出现的陷阱， 并一一给出了解决的方法。</p><p>这本书和良质一样很难归结为哪一类，有思辨，哲学 也有实用的方法，还有作者和儿子的旅游和感情。或者可以说整本书就是高级良质的努力吧。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;哪怕霍金称这本书可以让人们不必处于伟大的智慧和哲学之外，它仍然是一本难以读下去的书，&lt;br&gt;尤其是当你看完书，去总结“良质” 的时候，那些散落的观点，似乎都在说，“良质是拒绝被定义的”。 有人用心电交流，进取心，喜欢，内心平静，活在此处来定义”良质“， 很显然都是有失偏颇的。良质包括了他们所有，而他们却并非等同于良质。&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="读书" scheme="https://hongweikkx.github.io/tags/%E8%AF%BB%E4%B9%A6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>protobuff 在实际游戏开发中的协议封装</title>
+    <link href="https://hongweikkx.github.io/2019/01/11/protobuff-%E5%9C%A8%E5%AE%9E%E9%99%85%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B0%81%E8%A3%85/"/>
+    <id>https://hongweikkx.github.io/2019/01/11/protobuff-在实际游戏开发中的协议封装/</id>
+    <published>2019-01-11T04:28:30.000Z</published>
+    <updated>2019-01-11T05:53:20.666Z</updated>
+    
+    <content type="html"><![CDATA[<p>protobuff 本身并没有做切分数据流。</p><h3 id="1-切包方式"><a href="#1-切包方式" class="headerlink" title="1. 切包方式"></a>1. 切包方式</h3><p>所以在使用的时候，需要程序自己做切分数据流的操作。实际项目中（我见过的主要是游戏项目）大概有这么几种切分的方式<br><a id="more"></a></p><h5 id="1-gt-len-id-data-方式"><a href="#1-gt-len-id-data-方式" class="headerlink" title="1&gt;. len + id + data  方式"></a>1&gt;. len + id + data  方式</h5><p>len:长度, id:协议号, data:proto 数据。 len可以为定长，也仿造pb(protobuff)中的<a href="https://kakashi.me/2019/01/03/protobuff-vs-json/" target="_blank" rel="noopener">varint类型</a>来做。<br><br>切分方式就是通过len来知道包有多大，然后通过id映射到pb自己的包解析中去。</p><h4 id="2-gt-len-循环的unique-id-16-section-8-method-8-data"><a href="#2-gt-len-循环的unique-id-16-section-8-method-8-data" class="headerlink" title="2&gt;. len + 循环的unique id(16) + section(8) + method(8) + data"></a>2&gt;. len + 循环的unique id(16) + section(8) + method(8) + data</h4><p>unique_id和事先约定好的key做了协议加密<br>section + method 组成了协议号<br>切分方式类似于第一种，只是多加了协议加密  </p><h4 id="3-gt-len-nameLen-message-name-data-check-sum-冗余校验"><a href="#3-gt-len-nameLen-message-name-data-check-sum-冗余校验" class="headerlink" title="3&gt;. len + nameLen + message_name + data + check_sum (冗余校验)"></a>3&gt;. len + nameLen + message_name + data + check_sum (冗余校验)</h4><p>切分方式是通过len来切包，通过message_name 来找到对应的方式来解码，而不是通过id。<br>增加了check_sum来做校验。 buy why check_sum? tcp的可靠性有多高？ why crc-32? </p><p>总结下，<br><br><b> <font color="#A52A2A" size="4"> 切分方式 = len + id(or message_name) + data + encryption(可选) + check_sum(可选)</font> </b></p><h3 id="2-为什么pb自己不做切包？"><a href="#2-为什么pb自己不做切包？" class="headerlink" title="2. 为什么pb自己不做切包？"></a>2. 为什么pb自己不做切包？</h3>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;protobuff 本身并没有做切分数据流。&lt;/p&gt;
+&lt;h3 id=&quot;1-切包方式&quot;&gt;&lt;a href=&quot;#1-切包方式&quot; class=&quot;headerlink&quot; title=&quot;1. 切包方式&quot;&gt;&lt;/a&gt;1. 切包方式&lt;/h3&gt;&lt;p&gt;所以在使用的时候，需要程序自己做切分数据流的操作。实际项目中（我见过的主要是游戏项目）大概有这么几种切分的方式&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="protobuff" scheme="https://hongweikkx.github.io/tags/protobuff/"/>
+    
+      <category term="游戏开发" scheme="https://hongweikkx.github.io/tags/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/"/>
+    
+  </entry>
   
   <entry>
     <title>protobuff vs json?</title>
@@ -118,9 +161,9 @@
     </summary>
     
     
-      <category term="erlang" scheme="https://hongweikkx.github.io/tags/erlang/"/>
-    
       <category term="architectures" scheme="https://hongweikkx.github.io/tags/architectures/"/>
+    
+      <category term="erlang" scheme="https://hongweikkx.github.io/tags/erlang/"/>
     
   </entry>
   

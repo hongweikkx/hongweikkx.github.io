@@ -7,20 +7,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://hongweikkx.github.io">
-  <title>golang  用函数名动态调用函数（包括变参函数) | kkx&#39;s blogs</title>
+  <title>protobuff 在实际游戏开发中的协议封装 | kkx&#39;s blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="golang  用函数名动态调用函数（包括变参函数）">
-<meta name="keywords" content="golang">
+  <meta name="description" content="protobuff 本身并没有做切分数据流。 1. 切包方式所以在使用的时候，需要程序自己做切分数据流的操作。实际项目中（我见过的主要是游戏项目）大概有这么几种切分的方式">
+<meta name="keywords" content="protobuff,游戏开发">
 <meta property="og:type" content="article">
-<meta property="og:title" content="golang  用函数名动态调用函数（包括变参函数)">
-<meta property="og:url" content="https://hongweikkx.github.io/2018/08/24/golang-用函数名动态调用函数（包括变参函数/index.html">
+<meta property="og:title" content="protobuff 在实际游戏开发中的协议封装">
+<meta property="og:url" content="https://hongweikkx.github.io/2019/01/11/protobuff-在实际游戏开发中的协议封装/index.html">
 <meta property="og:site_name" content="kkx&#39;s blogs">
-<meta property="og:description" content="golang  用函数名动态调用函数（包括变参函数）">
+<meta property="og:description" content="protobuff 本身并没有做切分数据流。 1. 切包方式所以在使用的时候，需要程序自己做切分数据流的操作。实际项目中（我见过的主要是游戏项目）大概有这么几种切分的方式">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-08-24T15:23:35.613Z">
+<meta property="og:updated_time" content="2019-01-11T05:53:20.666Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="golang  用函数名动态调用函数（包括变参函数)">
-<meta name="twitter:description" content="golang  用函数名动态调用函数（包括变参函数）">
+<meta name="twitter:title" content="protobuff 在实际游戏开发中的协议封装">
+<meta name="twitter:description" content="protobuff 本身并没有做切分数据流。 1. 切包方式所以在使用的时候，需要程序自己做切分数据流的操作。实际项目中（我见过的主要是游戏项目）大概有这么几种切分的方式">
   
     <link rel="alternative" href="/atom.xml" title="kkx&#39;s blogs" type="application/atom+xml">
   
@@ -158,20 +158,20 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-golang-用函数名动态调用函数（包括变参函数" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-protobuff-在实际游戏开发中的协议封装" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      golang  用函数名动态调用函数（包括变参函数)
+      protobuff 在实际游戏开发中的协议封装
     </h1>
   
 
         
-        <a href="/2018/08/24/golang-用函数名动态调用函数（包括变参函数/" class="archive-article-date">
-  	<time datetime="2018-08-24T15:20:01.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-24</time>
+        <a href="/2019/01/11/protobuff-在实际游戏开发中的协议封装/" class="archive-article-date">
+  	<time datetime="2019-01-11T04:28:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-11</time>
 </a>
         
         
@@ -183,9 +183,13 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><strong> golang  用函数名动态调用函数（包括变参函数）</strong> <br><br><a id="more"></a><br>以下Apply函数为动态调用的方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">func main()&#123;</span><br><span class="line">      ret1 := Apply(Hello, []interface&#123;&#125;&#123;2,3&#125;)</span><br><span class="line">                  for _, v:= range ret1&#123;</span><br><span class="line">                           fmt.Println(v)</span><br><span class="line">                                 &#125;</span><br><span class="line">               ret2 := Apply(Format, []interface&#123;&#125;&#123;&quot;hello&quot;,44&#125;)</span><br><span class="line">                           for _, v:= range ret2&#123;</span><br><span class="line">                                    fmt.Println(v)</span><br><span class="line">                                          &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func Apply(f interface&#123;&#125;, args []interface&#123;&#125;)([]reflect.Value)&#123;</span><br><span class="line">      fun := reflect.ValueOf(f)</span><br><span class="line">               in := make([]reflect.Value, len(args))</span><br><span class="line">                  for k,param := range args&#123;</span><br><span class="line">                           in[k] = reflect.ValueOf(param)</span><br><span class="line">                                 &#125;</span><br><span class="line">            r := fun.Call(in)</span><br><span class="line">                     return r</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 变参</span><br><span class="line">func Format(a ...interface&#123;&#125;) string&#123;</span><br><span class="line">      fmt.Println(a)</span><br><span class="line">            return &quot;format return&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">func Hello(a int, b int)(int, string)&#123;</span><br><span class="line">      return a + b, &quot;hello&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><strong> 缺点：</strong>  不能够完美支持golang的多返回值。<br>只能通过 for range []reflect.value 来获得多返回值，<br>而不是可以  ret1, ret2 := Apply(f, args) 来接收多返回值</p>
-
+        <p>protobuff 本身并没有做切分数据流。</p>
+<h3 id="1-切包方式"><a href="#1-切包方式" class="headerlink" title="1. 切包方式"></a>1. 切包方式</h3><p>所以在使用的时候，需要程序自己做切分数据流的操作。实际项目中（我见过的主要是游戏项目）大概有这么几种切分的方式<br><a id="more"></a></p>
+<h5 id="1-gt-len-id-data-方式"><a href="#1-gt-len-id-data-方式" class="headerlink" title="1&gt;. len + id + data  方式"></a>1&gt;. len + id + data  方式</h5><p>len:长度, id:协议号, data:proto 数据。 len可以为定长，也仿造pb(protobuff)中的<a href="https://kakashi.me/2019/01/03/protobuff-vs-json/" target="_blank" rel="noopener">varint类型</a>来做。<br><br>切分方式就是通过len来知道包有多大，然后通过id映射到pb自己的包解析中去。</p>
+<h4 id="2-gt-len-循环的unique-id-16-section-8-method-8-data"><a href="#2-gt-len-循环的unique-id-16-section-8-method-8-data" class="headerlink" title="2&gt;. len + 循环的unique id(16) + section(8) + method(8) + data"></a>2&gt;. len + 循环的unique id(16) + section(8) + method(8) + data</h4><p>unique_id和事先约定好的key做了协议加密<br>section + method 组成了协议号<br>切分方式类似于第一种，只是多加了协议加密  </p>
+<h4 id="3-gt-len-nameLen-message-name-data-check-sum-冗余校验"><a href="#3-gt-len-nameLen-message-name-data-check-sum-冗余校验" class="headerlink" title="3&gt;. len + nameLen + message_name + data + check_sum (冗余校验)"></a>3&gt;. len + nameLen + message_name + data + check_sum (冗余校验)</h4><p>切分方式是通过len来切包，通过message_name 来找到对应的方式来解码，而不是通过id。<br>增加了check_sum来做校验。 buy why check_sum? tcp的可靠性有多高？ why crc-32? </p>
+<p>总结下，<br><br><b> <font color="#A52A2A" size="4"> 切分方式 = len + id(or message_name) + data + encryption(可选) + check_sum(可选)</font> </b></p>
+<h3 id="2-为什么pb自己不做切包？"><a href="#2-为什么pb自己不做切包？" class="headerlink" title="2. 为什么pb自己不做切包？"></a>2. 为什么pb自己不做切包？</h3>
       
 
       
@@ -198,7 +202,11 @@ var _hmt = _hmt || [];
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">protobuff</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">游戏开发</a>
         		</li>
       		
 		</ul>
@@ -254,7 +262,7 @@ var _hmt = _hmt || [];
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://hongweikkx.github.io/2018/08/24/golang-用函数名动态调用函数（包括变参函数/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=https://hongweikkx.github.io/2019/01/11/protobuff-在实际游戏开发中的协议封装/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -268,18 +276,18 @@ var _hmt = _hmt || [];
   
 <nav id="article-nav">
   
-    <a href="/2019/01/03/protobuff-vs-json/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/01/26/感-禅与摩托车维修艺术/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          protobuff vs json?
+          (感)禅与摩托车维修艺术
         
       </div>
     </a>
   
   
-    <a href="/2018/08/23/动态规划、分治、贪心、递归/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">动态规划、分治、贪心、递归</div>
+    <a href="/2019/01/03/protobuff-vs-json/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">protobuff vs json?</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -306,7 +314,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    目录，不存在的…
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-切包方式"><span class="toc-number">1.</span> <span class="toc-text">1. 切包方式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-gt-len-id-data-方式"><span class="toc-number">1.0.1.</span> <span class="toc-text">1&gt;. len + id + data  方式</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-gt-len-循环的unique-id-16-section-8-method-8-data"><span class="toc-number">1.1.</span> <span class="toc-text">2&gt;. len + 循环的unique id(16) + section(8) + method(8) + data</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-gt-len-nameLen-message-name-data-check-sum-冗余校验"><span class="toc-number">1.2.</span> <span class="toc-text">3&gt;. len + nameLen + message_name + data + check_sum (冗余校验)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-为什么pb自己不做切包？"><span class="toc-number">2.</span> <span class="toc-text">2. 为什么pb自己不做切包？</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -322,7 +330,7 @@ var _hmt = _hmt || [];
   
 
   
-  <div id="SOHUCS" sid="golang-用函数名动态调用函数（包括变参函数" ></div> 
+  <div id="SOHUCS" sid="protobuff-在实际游戏开发中的协议封装" ></div> 
 <script charset="utf-8" type="text/javascript" src="//changyan.sohu.com/upload/changyan.js" ></script>
 <script type="text/javascript">
     window.changyan.api.config({

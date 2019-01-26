@@ -4,6 +4,42 @@
 
     
   <url>
+    <loc>https://hongweikkx.github.io/2019/01/26/%E6%84%9F-%E7%A6%85%E4%B8%8E%E6%91%A9%E6%89%98%E8%BD%A6%E7%BB%B4%E4%BF%AE%E8%89%BA%E6%9C%AF/</loc>
+    <lastmod>2019-01-26T10:40:49.030Z</lastmod>
+    <data>
+        <display>
+        <title>(感)禅与摩托车维修艺术</title>
+        <pubTime>2019-01-26T10:36:28.000Z</pubTime>
+        
+        <tag>读书</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://hongweikkx.github.io/2019/01/11/protobuff-%E5%9C%A8%E5%AE%9E%E9%99%85%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B0%81%E8%A3%85/</loc>
+    <lastmod>2019-01-11T05:53:20.666Z</lastmod>
+    <data>
+        <display>
+        <title>protobuff 在实际游戏开发中的协议封装</title>
+        <pubTime>2019-01-11T04:28:30.000Z</pubTime>
+        
+        <tag>protobuff</tag>
+         
+        <tag>游戏开发</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://hongweikkx.github.io/2019/01/03/protobuff-vs-json/</loc>
     <lastmod>2019-01-03T11:12:48.830Z</lastmod>
     <data>
@@ -87,9 +123,9 @@
         <title>Heap-Architectures-for-Concurrent-Languages-using-Message-Passing</title>
         <pubTime>2018-07-20T17:58:24.000Z</pubTime>
         
-        <tag>erlang</tag>
-         
         <tag>architectures</tag>
+         
+        <tag>erlang</tag>
          
          
            
