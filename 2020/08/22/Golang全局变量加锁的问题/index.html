@@ -7,20 +7,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="https://hongweikkx.github.io">
-  <title>protobuff 在实际游戏开发中的协议封装 | kkx&#39;s blogs</title>
+  <title>Golang全局变量加锁的问题 | kkx&#39;s blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="protobuff 本身并没有做切分数据流。 1. 切包方式所以在使用的时候，需要程序自己做切分数据流的操作。实际项目中（我见过的主要是游戏项目）大概有这么几种切分的方式">
-<meta name="keywords" content="protobuff,游戏开发">
+  <meta name="description" content="如果全局变量只读取 那自然是不需要加锁的 如果全局变量多进程读，多进程写，那自然是需要加读写锁的 但是如果全局变量只有一个进程写，其他进程读呢？ 如果采用COW的方式，写进程只是通过单次赋值的方式来更新变量，是否就可以不加锁了呢？">
+<meta name="keywords" content="golang">
 <meta property="og:type" content="article">
-<meta property="og:title" content="protobuff 在实际游戏开发中的协议封装">
-<meta property="og:url" content="https://hongweikkx.github.io/2019/01/11/protobuff-在实际游戏开发中的协议封装/index.html">
+<meta property="og:title" content="Golang全局变量加锁的问题">
+<meta property="og:url" content="https://hongweikkx.github.io/2020/08/22/Golang全局变量加锁的问题/index.html">
 <meta property="og:site_name" content="kkx&#39;s blogs">
-<meta property="og:description" content="protobuff 本身并没有做切分数据流。 1. 切包方式所以在使用的时候，需要程序自己做切分数据流的操作。实际项目中（我见过的主要是游戏项目）大概有这么几种切分的方式">
+<meta property="og:description" content="如果全局变量只读取 那自然是不需要加锁的 如果全局变量多进程读，多进程写，那自然是需要加读写锁的 但是如果全局变量只有一个进程写，其他进程读呢？ 如果采用COW的方式，写进程只是通过单次赋值的方式来更新变量，是否就可以不加锁了呢？">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-01-11T05:53:20.666Z">
+<meta property="og:updated_time" content="2020-08-21T22:39:50.787Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="protobuff 在实际游戏开发中的协议封装">
-<meta name="twitter:description" content="protobuff 本身并没有做切分数据流。 1. 切包方式所以在使用的时候，需要程序自己做切分数据流的操作。实际项目中（我见过的主要是游戏项目）大概有这么几种切分的方式">
+<meta name="twitter:title" content="Golang全局变量加锁的问题">
+<meta name="twitter:description" content="如果全局变量只读取 那自然是不需要加锁的 如果全局变量多进程读，多进程写，那自然是需要加读写锁的 但是如果全局变量只有一个进程写，其他进程读呢？ 如果采用COW的方式，写进程只是通过单次赋值的方式来更新变量，是否就可以不加锁了呢？">
   
     <link rel="alternative" href="/atom.xml" title="kkx&#39;s blogs" type="application/atom+xml">
   
@@ -158,20 +158,20 @@ var _hmt = _hmt || [];
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-protobuff-在实际游戏开发中的协议封装" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Golang全局变量加锁的问题" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      protobuff 在实际游戏开发中的协议封装
+      Golang全局变量加锁的问题
     </h1>
   
 
         
-        <a href="/2019/01/11/protobuff-在实际游戏开发中的协议封装/" class="archive-article-date">
-  	<time datetime="2019-01-11T04:28:30.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-11</time>
+        <a href="/2020/08/22/Golang全局变量加锁的问题/" class="archive-article-date">
+  	<time datetime="2020-08-21T22:31:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-08-22</time>
 </a>
         
         
@@ -183,13 +183,37 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>protobuff 本身并没有做切分数据流。</p>
-<h3 id="1-切包方式"><a href="#1-切包方式" class="headerlink" title="1. 切包方式"></a>1. 切包方式</h3><p>所以在使用的时候，需要程序自己做切分数据流的操作。实际项目中（我见过的主要是游戏项目）大概有这么几种切分的方式<br><a id="more"></a></p>
-<h5 id="1-gt-len-id-data-方式"><a href="#1-gt-len-id-data-方式" class="headerlink" title="1&gt;. len + id + data  方式"></a>1&gt;. len + id + data  方式</h5><p>len:长度, id:协议号, data:proto 数据。 len可以为定长，也仿造pb(protobuff)中的<a href="https://kakashi.me/2019/01/03/protobuff-vs-json/" target="_blank" rel="noopener">varint类型</a>来做。<br><br>切分方式就是通过len来知道包有多大，然后通过id映射到pb自己的包解析中去。</p>
-<h4 id="2-gt-len-循环的unique-id-16-section-8-method-8-data"><a href="#2-gt-len-循环的unique-id-16-section-8-method-8-data" class="headerlink" title="2&gt;. len + 循环的unique id(16) + section(8) + method(8) + data"></a>2&gt;. len + 循环的unique id(16) + section(8) + method(8) + data</h4><p>unique_id和事先约定好的key做了协议加密<br>section + method 组成了协议号<br>切分方式类似于第一种，只是多加了协议加密  </p>
-<h4 id="3-gt-len-nameLen-message-name-data-check-sum-冗余校验"><a href="#3-gt-len-nameLen-message-name-data-check-sum-冗余校验" class="headerlink" title="3&gt;. len + nameLen + message_name + data + check_sum (冗余校验)"></a>3&gt;. len + nameLen + message_name + data + check_sum (冗余校验)</h4><p>切分方式是通过len来切包，通过message_name 来找到对应的方式来解码，而不是通过id。<br>增加了check_sum来做校验。 buy why check_sum? tcp的可靠性有多高？ why crc-32? </p>
-<p>总结下，<br><br><b> <font color="#A52A2A" size="4"> 切分方式 = len + id(or message_name) + data + encryption(可选) + check_sum(可选)</font> </b></p>
-<h3 id="2-为什么pb自己不做切包？"><a href="#2-为什么pb自己不做切包？" class="headerlink" title="2. 为什么pb自己不做切包？"></a>2. 为什么pb自己不做切包？</h3>
+        <ul>
+<li>如果全局变量只读取 那自然是不需要加锁的</li>
+<li>如果全局变量多进程读，多进程写，那自然是需要加读写锁的</li>
+<li>但是如果全局变量只有一个进程写，其他进程读呢？ 如果采用COW的方式，写进程只是通过单次赋值的方式来更新变量，是否就可以不加锁了呢？<a id="more"></a>
+就第三种情况而言：<br>当然我们通过 go build -race 或者 go run -race 就会出现<br><code>WARNING: DATA RACE</code>。 但是出现 data race 就证明一定有问题么？</li>
+</ul>
+<p>其实核心点在于这个赋值是否是原子的。也就是说是否存在 p1 = p2 的写入时，指针被临时替换为p3，并在此时goroutine切出的情况。可以想到的一种情况是64字节的指针需要两次mv才能完成全部变量的赋值。那么就有可能在两次mv中间切出，进而出现p3的情况。</p>
+<p>之前在stackoverflow 上有个讨论<br><a href="https://stackoverflow.com/questions/21447463/is-assigning-a-pointer-atomic-in-go" target="_blank" rel="noopener">https://stackoverflow.com/questions/21447463/is-assigning-a-pointer-atomic-in-go</a><br>其中高votes的回答是说：</p>
+<blockquote>
+<p> 在go中，唯一保证原子性的操作是在 sync.atomic, 所以如果你想确保原子性，可以使用sync.Mutex 或者 sync.atomic 中的原子函数。 但是我不建议 sync.atomic中函数， 因为你不得不在任何使用指针的地方使用他们，这是非常难做到正确使用的。 <br><br>用mutex 是好的go style - 你可以很方便的定义一个函数返回指针。 比如</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import &quot;sync&quot;</span><br><span class="line">var secretPointer *int</span><br><span class="line">var pointerLock sync.Mutex</span><br><span class="line"></span><br><span class="line">func CurrentPointer() *int &#123;</span><br><span class="line">    pointerLock.Lock()</span><br><span class="line">    defer pointerLock.Unlock()</span><br><span class="line">    return secretPointer</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func SetPointer(p *int) &#123;</span><br><span class="line">    pointerLock.Lock()</span><br><span class="line">    secretPointer = p</span><br><span class="line">    pointerLock.Unlock()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>…</p>
+</blockquote>
+<p>所以一个ok的go style 应该是使用 sync.Mutex 的。 <br><br>golang doc也是这么说的。 <a href="https://golang.org/ref/mem" target="_blank" rel="noopener">https://golang.org/ref/mem</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">type T struct &#123;</span><br><span class="line">	msg string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var g *T</span><br><span class="line"></span><br><span class="line">func setup() &#123;</span><br><span class="line">	t := new(T)</span><br><span class="line">	t.msg = &quot;hello, world&quot;</span><br><span class="line">	g = t</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	go setup()</span><br><span class="line">	for g == nil &#123;</span><br><span class="line">	&#125;</span><br><span class="line">	print(g.msg)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Even if main observes g != nil and exits its loop, there is no guarantee that it will observe the initialized value for g.msg.</p>
+</blockquote>
+<blockquote>
+<p>In all these examples, the solution is the same: use explicit synchronization.</p>
+</blockquote>
+<p><strong>但是当我们用<code>go tool asm</code> 看时， 确实只有一个指令 MOVQ。</strong><br>所以只能说 </p>
+<blockquote>
+<p>因为规范没有指定，所以你应该假设它不是原子的。即使它现在是原子的，它也有可能在不违反规范的情况下改变。</p>
+</blockquote>
+<p>总之我们不应该做赋值原子的假设，而应该按照规范，使用sync.Mutex 来做。 </p>
+<h2 id="REF"><a href="#REF" class="headerlink" title="REF"></a>REF</h2><p> ref1: <a href="https://ms2008.github.io/2019/05/12/golang-data-race/" target="_blank" rel="noopener">https://ms2008.github.io/2019/05/12/golang-data-race/</a></p>
+<p> ref2: <a href="https://github.com/Terry-Mao/gopush-cluster/issues/44" target="_blank" rel="noopener">https://github.com/Terry-Mao/gopush-cluster/issues/44</a></p>
+
       
 
       
@@ -202,11 +226,7 @@ var _hmt = _hmt || [];
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">protobuff</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">游戏开发</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">golang</a>
         		</li>
       		
 		</ul>
@@ -262,7 +282,7 @@ var _hmt = _hmt || [];
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://hongweikkx.github.io/2019/01/11/protobuff-在实际游戏开发中的协议封装/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=https://hongweikkx.github.io/2020/08/22/Golang全局变量加锁的问题/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -276,18 +296,9 @@ var _hmt = _hmt || [];
   
 <nav id="article-nav">
   
-    <a href="/2019/01/26/感-禅与摩托车维修艺术/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          (感)禅与摩托车维修艺术
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/01/03/protobuff-vs-json/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">protobuff vs json?</div>
+    <a href="/2020/07/01/ssh远程登录辅助管理工具/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">ssh远程登录辅助管理工具</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -314,7 +325,7 @@ var _hmt = _hmt || [];
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-切包方式"><span class="toc-number">1.</span> <span class="toc-text">1. 切包方式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-gt-len-id-data-方式"><span class="toc-number">1.0.1.</span> <span class="toc-text">1&gt;. len + id + data  方式</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-gt-len-循环的unique-id-16-section-8-method-8-data"><span class="toc-number">1.1.</span> <span class="toc-text">2&gt;. len + 循环的unique id(16) + section(8) + method(8) + data</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-gt-len-nameLen-message-name-data-check-sum-冗余校验"><span class="toc-number">1.2.</span> <span class="toc-text">3&gt;. len + nameLen + message_name + data + check_sum (冗余校验)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-为什么pb自己不做切包？"><span class="toc-number">2.</span> <span class="toc-text">2. 为什么pb自己不做切包？</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#REF"><span class="toc-number">1.</span> <span class="toc-text">REF</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -338,7 +349,7 @@ var _hmt = _hmt || [];
 <script src="https://www.wenjunjiang.win/js/gitment.js"></script>
 <script>
 var gitment = new Gitment({
-  id: "https://hongweikkx.github.io/2019/01/11/protobuff-在实际游戏开发中的协议封装/",
+  id: "https://hongweikkx.github.io/2020/08/22/Golang全局变量加锁的问题/",
   owner: 'hongweikkx',
   repo: 'hongweikkx.github.io',
   oauth: {

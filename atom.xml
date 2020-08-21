@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://hongweikkx.github.io/"/>
-  <updated>2020-07-01T06:07:55.409Z</updated>
+  <updated>2020-08-21T22:39:50.787Z</updated>
   <id>https://hongweikkx.github.io/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Golang全局变量加锁的问题</title>
+    <link href="https://hongweikkx.github.io/2020/08/22/Golang%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F%E5%8A%A0%E9%94%81%E7%9A%84%E9%97%AE%E9%A2%98/"/>
+    <id>https://hongweikkx.github.io/2020/08/22/Golang全局变量加锁的问题/</id>
+    <published>2020-08-21T22:31:25.000Z</published>
+    <updated>2020-08-21T22:39:50.787Z</updated>
+    
+    <content type="html"><![CDATA[<ul><li>如果全局变量只读取 那自然是不需要加锁的</li><li>如果全局变量多进程读，多进程写，那自然是需要加读写锁的</li><li>但是如果全局变量只有一个进程写，其他进程读呢？ 如果采用COW的方式，写进程只是通过单次赋值的方式来更新变量，是否就可以不加锁了呢？<a id="more"></a>就第三种情况而言：<br>当然我们通过 go build -race 或者 go run -race 就会出现<br><code>WARNING: DATA RACE</code>。 但是出现 data race 就证明一定有问题么？</li></ul><p>其实核心点在于这个赋值是否是原子的。也就是说是否存在 p1 = p2 的写入时，指针被临时替换为p3，并在此时goroutine切出的情况。可以想到的一种情况是64字节的指针需要两次mv才能完成全部变量的赋值。那么就有可能在两次mv中间切出，进而出现p3的情况。</p><p>之前在stackoverflow 上有个讨论<br><a href="https://stackoverflow.com/questions/21447463/is-assigning-a-pointer-atomic-in-go" target="_blank" rel="noopener">https://stackoverflow.com/questions/21447463/is-assigning-a-pointer-atomic-in-go</a><br>其中高votes的回答是说：</p><blockquote><p> 在go中，唯一保证原子性的操作是在 sync.atomic, 所以如果你想确保原子性，可以使用sync.Mutex 或者 sync.atomic 中的原子函数。 但是我不建议 sync.atomic中函数， 因为你不得不在任何使用指针的地方使用他们，这是非常难做到正确使用的。 <br><br>用mutex 是好的go style - 你可以很方便的定义一个函数返回指针。 比如</p></blockquote><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import &quot;sync&quot;</span><br><span class="line">var secretPointer *int</span><br><span class="line">var pointerLock sync.Mutex</span><br><span class="line"></span><br><span class="line">func CurrentPointer() *int &#123;</span><br><span class="line">    pointerLock.Lock()</span><br><span class="line">    defer pointerLock.Unlock()</span><br><span class="line">    return secretPointer</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func SetPointer(p *int) &#123;</span><br><span class="line">    pointerLock.Lock()</span><br><span class="line">    secretPointer = p</span><br><span class="line">    pointerLock.Unlock()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><blockquote><p>…</p></blockquote><p>所以一个ok的go style 应该是使用 sync.Mutex 的。 <br><br>golang doc也是这么说的。 <a href="https://golang.org/ref/mem" target="_blank" rel="noopener">https://golang.org/ref/mem</a></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">type T struct &#123;</span><br><span class="line">msg string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var g *T</span><br><span class="line"></span><br><span class="line">func setup() &#123;</span><br><span class="line">t := new(T)</span><br><span class="line">t.msg = &quot;hello, world&quot;</span><br><span class="line">g = t</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">go setup()</span><br><span class="line">for g == nil &#123;</span><br><span class="line">&#125;</span><br><span class="line">print(g.msg)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><blockquote><p>Even if main observes g != nil and exits its loop, there is no guarantee that it will observe the initialized value for g.msg.</p></blockquote><blockquote><p>In all these examples, the solution is the same: use explicit synchronization.</p></blockquote><p><strong>但是当我们用<code>go tool asm</code> 看时， 确实只有一个指令 MOVQ。</strong><br>所以只能说 </p><blockquote><p>因为规范没有指定，所以你应该假设它不是原子的。即使它现在是原子的，它也有可能在不违反规范的情况下改变。</p></blockquote><p>总之我们不应该做赋值原子的假设，而应该按照规范，使用sync.Mutex 来做。 </p><h2 id="REF"><a href="#REF" class="headerlink" title="REF"></a>REF</h2><p> ref1: <a href="https://ms2008.github.io/2019/05/12/golang-data-race/" target="_blank" rel="noopener">https://ms2008.github.io/2019/05/12/golang-data-race/</a></p><p> ref2: <a href="https://github.com/Terry-Mao/gopush-cluster/issues/44" target="_blank" rel="noopener">https://github.com/Terry-Mao/gopush-cluster/issues/44</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;ul&gt;
+&lt;li&gt;如果全局变量只读取 那自然是不需要加锁的&lt;/li&gt;
+&lt;li&gt;如果全局变量多进程读，多进程写，那自然是需要加读写锁的&lt;/li&gt;
+&lt;li&gt;但是如果全局变量只有一个进程写，其他进程读呢？ 如果采用COW的方式，写进程只是通过单次赋值的方式来更新变量，是否就可以不加锁了呢？
+    
+    </summary>
+    
+    
+      <category term="golang" scheme="https://hongweikkx.github.io/tags/golang/"/>
+    
+  </entry>
   
   <entry>
     <title>ssh远程登录辅助管理工具</title>
